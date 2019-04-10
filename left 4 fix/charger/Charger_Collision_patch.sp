@@ -45,7 +45,7 @@ public Plugin myinfo =
 	author = "Lux",
 	description = "Fixes charger only allow to his 1 survivor index & allows charging same target more than once",
 	version = PLUGIN_VERSION,
-	url = ""
+	url = "forums.alliedmods.net/showthread.php?p=2647017"
 };
 
 

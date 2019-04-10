@@ -43,7 +43,7 @@ public Plugin myinfo =
 	author = "Lux",
 	description = "Fixes witch targeting wrong person",
 	version = PLUGIN_VERSION,
-	url = ""
+	url = "forums.alliedmods.net/showthread.php?p=2647014"
 };
 
 public void OnPluginStart()

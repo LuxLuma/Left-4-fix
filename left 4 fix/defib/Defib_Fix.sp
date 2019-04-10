@@ -57,7 +57,7 @@ public Plugin myinfo =
 	author = "Lux",
 	description = "Fixes defibbing from failing when defibbing an alive character index",
 	version = PLUGIN_VERSION,
-	url = ""
+	url = "forums.alliedmods.net/showthread.php?p=2647018"
 };
 
 public void OnPluginStart()

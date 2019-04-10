@@ -42,7 +42,7 @@ public Plugin myinfo =
 	author = "Lux",
 	description = "Fixes witch when wandering playing startle twice by forcing the NextThink to end the startle.",
 	version = PLUGIN_VERSION,
-	url = ""
+	url = "forums.alliedmods.net/showthread.php?p=2647014"
 };
 
 public void OnPluginStart()
