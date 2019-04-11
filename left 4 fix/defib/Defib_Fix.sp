@@ -96,7 +96,7 @@ public void OnClientPutInServer(int iClient)
 {
 	if(!IsFakeClient(iClient))
 	{
-		SDKHook(iClient, SDKHook_PreThink, PreThink);
+		SDKHook(iClient, SDKHook_PostThink, PostThink);
 		SDKHook(iClient, SDKHook_PostThinkPost, ThinkPost);
 	}
 	
@@ -114,12 +114,12 @@ public void OnEntityCreated(int iEntity, const char[] sClassname)
 	else if(StrEqual(sClassname, "survivor_bot"))
 	{
 		//incase using death chaos's defib plugin
-		SDKHook(iEntity, SDKHook_PreThink, PreThink);
+		SDKHook(iEntity, SDKHook_PreThink, PostThink);
 		SDKHook(iEntity, SDKHook_PostThinkPost, ThinkPost);
 	}
 }
 
-public void PreThink(int iClient)
+public void PostThink(int iClient)
 {
 	if(!IsPlayerAlive(iClient) || GetClientTeam(iClient) != 2)
 		return;
