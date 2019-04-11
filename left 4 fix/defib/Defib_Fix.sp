@@ -24,7 +24,7 @@
 
 #pragma newdecls required
 
-#define PLUGIN_VERSION	"1.0"
+#define PLUGIN_VERSION	"1.1"
 
 enum DeathModelType
 {
@@ -38,6 +38,9 @@ static bool g_bDefibAnyone = false;
 static int g_iClientCharIDs[MAXPLAYERS+1][MAXPLAYERS+1];
 static bool g_bReapplyChars[MAXPLAYERS+1] = {false, ...};
 static int g_iDeathModelRef[MAXPLAYERS+1][2];
+
+static bool bIgnore = false;
+static int iDeathModelRef;
 
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -69,6 +72,7 @@ public void OnPluginStart()
 	CvarsChanged();
 	
 	HookEvent("round_start", OnRoundStart);
+	HookEvent("player_death", ePlayerDeath, EventHookMode_Pre);
 }
 
 public void eConvarChanged(Handle hCvar, const char[] sOldVal, const char[] sNewVal)
@@ -102,12 +106,17 @@ public void OnClientPutInServer(int iClient)
 
 public void OnEntityCreated(int iEntity, const char[] sClassname)
 {
-	if(sClassname[0] != 's' || !StrEqual(sClassname, "survivor_bot"))
+	if(sClassname[0] != 's')
 	 	return;
-	
-	//incase using death chaos's defib plugin
-	SDKHook(iEntity, SDKHook_PreThink, PreThink);
-	SDKHook(iEntity, SDKHook_PostThinkPost, ThinkPost);
+	 	
+	if(StrEqual(sClassname, "survivor_death_model", false))
+		SDKHook(iEntity, SDKHook_SpawnPost, SpawnPostDeathModel);
+	else if(StrEqual(sClassname, "survivor_bot"))
+	{
+		//incase using death chaos's defib plugin
+		SDKHook(iEntity, SDKHook_PreThink, PreThink);
+		SDKHook(iEntity, SDKHook_PostThinkPost, ThinkPost);
+	}
 }
 
 public void PreThink(int iClient)
@@ -269,3 +278,41 @@ signed int __cdecl ConvertToInternalCharacter(signed int a1)
   return result;
 }
 */
+
+public void ePlayerDeath(Handle hEvent, const char[] sEventName, bool bDontBroadcast)
+{
+	int iVictim = GetClientOfUserId(GetEventInt(hEvent, "userid"));
+	if(iVictim < 1 || iVictim > MaxClients || !IsClientInGame(iVictim) || GetClientTeam(iVictim) != 2)
+		return;
+	
+	if(!IsValidEntRef(iDeathModelRef))
+		return;
+	
+	float fPos[3];
+	GetClientAbsOrigin(iVictim, fPos);
+	int iEnt = EntRefToEntIndex(iDeathModelRef);
+	iDeathModelRef = INVALID_ENT_REFERENCE;
+	TeleportEntity(iEnt, fPos, NULL_VECTOR, NULL_VECTOR);// fix valve issue with teleporting clones
+
+}
+
+public void SpawnPostDeathModel(int iEntity)
+{
+	SDKUnhook(iEntity, SDKHook_SpawnPost, SpawnPostDeathModel);
+	if(!IsValidEntity(iEntity))
+		return;
+	
+	iDeathModelRef = EntIndexToEntRef(iEntity);
+	
+	if(bIgnore)
+		return;
+	
+	bIgnore = true;
+	RequestFrame(ClearVar);
+}
+
+public void ClearVar(any nothing)
+{
+	iDeathModelRef = INVALID_ENT_REFERENCE;
+	bIgnore = false;
+}
