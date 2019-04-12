@@ -1,0 +1,16 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Signatures"
+		{
+			"InfoChangelevel::ChangeLevelNow"
+			{
+				"library"		"server"
+				"linux"			"@_ZN15InfoChangelevel14ChangeLevelNowEv"
+				"windows"		"\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x01\x8B\x50\x3C"
+								/* 56 8B F1 8B 0D ? ? ? ? 8B 01 8B 50 3C */
+			}
+		}
+	}
+}
