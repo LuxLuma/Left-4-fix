@@ -20,12 +20,13 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <sdkhooks>
 
 #pragma newdecls required
 
-#define PLUGIN_VERSION "1.0"
+#define PLUGIN_VERSION "1.0.8"
 
-static Handle hInfoMapChange = null;
+static Handle hInfoMapChange;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -34,23 +35,26 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 		strcopy(error, err_max, "Plugin only supports Left 4 Dead 2");
 		return APLRes_SilentFailure;
 	}
+	
+	RegPluginLibrary("l4d2_changelevel");
+	CreateNative("L4D2_ChangeLevel", L4D2_ChangeLevelNV);
 	return APLRes_Success;
 }
 
 public Plugin myinfo =
 {
-	name = "l4d2_changelevel_fix",
+	name = "l4d2_changelevel",
 	author = "Lux",
-	description = "Creates a clean way to change maps, sm_map/changelevel causes leaks and other spooky stuff causing server perf to be worse over time.",
+	description = "Creates a clean way to change maps, sm_map causes leaks and other spooky stuff causing server perf to be worse over time.",
 	version = PLUGIN_VERSION,
 	url = "https://forums.alliedmods.net/showthread.php?p=2607394"
 };
 
 public void OnPluginStart()
 {
-	Handle hGamedata = LoadGameConfigFile("l4d2_changelevel_fix");
+	Handle hGamedata = LoadGameConfigFile("l4d2_changelevel");
 	if(hGamedata == null) 
-		SetFailState("Failed to load \"l4d2_changelevel_fix.txt\" gamedata.");
+		SetFailState("Failed to load \"l4d2_changelevel.txt\" gamedata.");
 	
 	StartPrepSDKCall(SDKCall_Entity);
 	if(!PrepSDKCall_SetFromConf(hGamedata, SDKConf_Signature, "InfoChangelevel::ChangeLevelNow"))
@@ -62,9 +66,8 @@ public void OnPluginStart()
 
 	delete hGamedata;
 	
-	AddCommandListener(CmdMapChange, "map");
-	AddCommandListener(CmdMapChange, "changelevel");
-	AddCommandListener(CmdMapChange, "changelevel2");
+	RegServerCmd("sm_changelevelex", ChangelevelEx, "L4D2 changelevel method to release all resources");
+	RegAdminCmd("sm_changelevel", Changelevel, ADMFLAG_ROOT, "L4D2 changelevel method to release all resources");
 }
 
 public Action CmdMapChange(int iClient, const char[] sCommand, int iArg)
@@ -72,7 +75,7 @@ public Action CmdMapChange(int iClient, const char[] sCommand, int iArg)
 	if(GetCmdArgs() < 1)
 		return Plugin_Continue;
 		
-	char sMapName[64];
+	char sMapName[256];
 	GetCmdArg(1, sMapName, sizeof(sMapName));
 	if(sMapName[0] == '\0')
 		return Plugin_Continue;
@@ -81,15 +84,42 @@ public Action CmdMapChange(int iClient, const char[] sCommand, int iArg)
 	if(FindMap(sMapName, temp, sizeof(temp)) == FindMap_NotFound)
 		return Plugin_Continue;
 	
-	char sCurrentMap[64];
-	GetCurrentMap(sCurrentMap, sizeof(sCurrentMap));
-	if(StrEqual(sMapName, sCurrentMap, false))//breaks if let current map be the same map.
-		return Plugin_Continue;
-	
-	return ((L4D2_ChangeLevel(sMapName)) ? Plugin_Handled : Plugin_Continue);
+	L4D2_ChangeLevel(sMapName);
+	return Plugin_Handled;
 }
 
-bool L4D2_ChangeLevel(const char[] sMapName)
+public Action ChangelevelEx(int iArg)
+{
+	char sMapName[PLATFORM_MAX_PATH];
+	char temp[1];
+	
+	GetCmdArg(1, sMapName, sizeof(sMapName));
+	if(sMapName[0] == '\0' || FindMap(sMapName, temp, sizeof(temp)) == FindMap_NotFound)
+	{
+		PrintToServer("sm_changelevelex Unable to find map \"%s\"", sMapName);
+		return Plugin_Handled;
+	}
+	
+	L4D2_ChangeLevel(sMapName);
+	return Plugin_Handled;
+}
+public Action Changelevel(int iClient, int iArg)
+{
+	char sMapName[PLATFORM_MAX_PATH];
+	char temp[1];
+	
+	GetCmdArg(1, sMapName, sizeof(sMapName));
+	if(sMapName[0] == '\0' || FindMap(sMapName, temp, sizeof(temp)) == FindMap_NotFound)
+	{
+		ReplyToCommand(iClient, "sm_changelevel Unable to find map \"%s\"", sMapName);
+		return Plugin_Handled;
+	}
+	
+	L4D2_ChangeLevel(sMapName);
+	return Plugin_Handled;
+}
+
+stock bool L4D2_ChangeLevel(const char[] sMapName)
 {
 	int iInfoChangelevel = CreateEntityByName("info_changelevel");
 	if(iInfoChangelevel < 1 || !IsValidEntity(iInfoChangelevel))
@@ -106,4 +136,19 @@ bool L4D2_ChangeLevel(const char[] sMapName)
 	SDKCall(hInfoMapChange, iInfoChangelevel);	//don't allow invalid maps get here or it will break level changing.
 	AcceptEntityInput(iInfoChangelevel, "Kill");
 	return true;
+}
+
+public int L4D2_ChangeLevelNV(Handle plugin, int numParams)
+{
+	if(numParams < 1)
+		ThrowNativeError(SP_ERROR_PARAM, "Invalid numParams");
+	
+	char sMapName[PLATFORM_MAX_PATH];
+	GetNativeString(1, sMapName, sizeof(sMapName));
+	
+	char temp[1];
+	if(sMapName[0] == '\0' || FindMap(sMapName, temp, sizeof(temp)) == FindMap_NotFound)
+		ThrowNativeError(SP_ERROR_PARAM, "Unable to change to that map \"%s\"", sMapName);
+	
+	return L4D2_ChangeLevel(sMapName);
 }
