@@ -1,7 +1,4 @@
 /*
-*	
-*	LMC_L4D2_SetTransmit() module "LMCL4D2SetTransmit" required to use native, Library is called "LMCL4D2SetTransmit"
-*	
 *	https://github.com/LuxLuma/Left-4-fix
 */
 
