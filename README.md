@@ -10,3 +10,10 @@ https://forums.alliedmods.net/showthread.php?t=315482
 
 Witch fixes
 https://forums.alliedmods.net/showthread.php?t=315481
+
+
+
+
+
+
+Left 4 Fix is a repo of stuff valve should fix for left 4 dead1/2 but have not, why this exists.
