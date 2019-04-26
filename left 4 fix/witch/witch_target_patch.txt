@@ -61,7 +61,7 @@
 			{
 				"library"		"server"
 				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x83\x38\x35\x75\x2A\x8B\x41\x38"
-								/* ? ? ? ? ? ? 83 38 35 75 ? 8B 41 38 */
+								/* ? ? ? ? ? ? 83 38 35 75 ? 8B 41 ? 83 F8 08 ? ? 8B */
 			}
 			"WitchAttack::Update"
 			{
