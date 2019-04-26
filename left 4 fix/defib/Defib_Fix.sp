@@ -114,7 +114,7 @@ public void OnEntityCreated(int iEntity, const char[] sClassname)
 	else if(StrEqual(sClassname, "survivor_bot"))
 	{
 		//incase using death chaos's defib plugin
-		SDKHook(iEntity, SDKHook_PreThink, PostThink);
+		SDKHook(iEntity, SDKHook_PostThink, PostThink);
 		SDKHook(iEntity, SDKHook_PostThinkPost, ThinkPost);
 	}
 }
