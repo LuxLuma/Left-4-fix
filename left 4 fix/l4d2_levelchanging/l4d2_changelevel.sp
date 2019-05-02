@@ -24,9 +24,13 @@
 
 #pragma newdecls required
 
-#define PLUGIN_VERSION "1.0.8"
+#define PLUGIN_VERSION "1.1.2"
 
-static Handle hInfoMapChange;
+//static Handle hInfoMapChange;
+static Handle hDirectorChangeLevel;
+
+//Credit ProdigySim for l4d2_direct reading of TheDirector class https://forums.alliedmods.net/showthread.php?t=180028
+static Address TheDirector = Address_Null;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -56,14 +60,27 @@ public void OnPluginStart()
 	if(hGamedata == null) 
 		SetFailState("Failed to load \"l4d2_changelevel.txt\" gamedata.");
 	
-	StartPrepSDKCall(SDKCall_Entity);
+	/*StartPrepSDKCall(SDKCall_Entity);
 	if(!PrepSDKCall_SetFromConf(hGamedata, SDKConf_Signature, "InfoChangelevel::ChangeLevelNow"))
 		SetFailState("Error finding the 'InfoChangelevel::ChangeLevelNow' signature.");
 	
 	hInfoMapChange = EndPrepSDKCall();
 	if(hInfoMapChange == null)
-		SetFailState("Unable to prep SDKCall 'InfoChangelevel::ChangeLevelNow'");
-
+		SetFailState("Unable to prep SDKCall 'InfoChangelevel::ChangeLevelNow'");*/
+		
+	StartPrepSDKCall(SDKCall_Raw);
+	if(!PrepSDKCall_SetFromConf(hGamedata, SDKConf_Signature, "CDirector::OnChangeChapterVote"))
+		SetFailState("Error finding the 'CDirector::OnChangeChapterVote' signature.");
+	PrepSDKCall_AddParameter(SDKType_String, SDKPass_Pointer);
+	
+	hDirectorChangeLevel = EndPrepSDKCall();
+	if(hDirectorChangeLevel == null)
+		SetFailState("Unable to prep SDKCall 'CDirector::OnChangeChapterVote'");
+	
+	TheDirector = GameConfGetAddress(hGamedata, "CDirector");
+	if(TheDirector == Address_Null)
+		SetFailState("Unable to get 'CDirector' Address");
+	
 	delete hGamedata;
 	
 	RegServerCmd("sm_changelevelex", ChangelevelEx, "L4D2 changelevel method to release all resources");
@@ -119,7 +136,7 @@ public Action Changelevel(int iClient, int iArg)
 	return Plugin_Handled;
 }
 
-stock bool L4D2_ChangeLevel(const char[] sMapName)
+/*stock bool L4D2_ChangeLevel(const char[] sMapName)
 {
 	int iInfoChangelevel = CreateEntityByName("info_changelevel");
 	if(iInfoChangelevel < 1 || !IsValidEntity(iInfoChangelevel))
@@ -136,6 +153,12 @@ stock bool L4D2_ChangeLevel(const char[] sMapName)
 	SDKCall(hInfoMapChange, iInfoChangelevel);	//don't allow invalid maps get here or it will break level changing.
 	AcceptEntityInput(iInfoChangelevel, "Kill");
 	return true;
+}*/
+
+void L4D2_ChangeLevel(const char[] sMapName)
+{
+	PrintToServer("[SM] Changelevel to %s", sMapName);
+	SDKCall(hDirectorChangeLevel, TheDirector, sMapName);
 }
 
 public int L4D2_ChangeLevelNV(Handle plugin, int numParams)
@@ -150,5 +173,5 @@ public int L4D2_ChangeLevelNV(Handle plugin, int numParams)
 	if(sMapName[0] == '\0' || FindMap(sMapName, temp, sizeof(temp)) == FindMap_NotFound)
 		ThrowNativeError(SP_ERROR_PARAM, "Unable to change to that map \"%s\"", sMapName);
 	
-	return L4D2_ChangeLevel(sMapName);
+	L4D2_ChangeLevel(sMapName);
 }

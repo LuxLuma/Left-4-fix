@@ -12,7 +12,7 @@
 *	@param	sMapName	Map String without .bsp
 *	@return	true Was able to change map, false otherwise.
 */
-native bool L4D2_ChangeLevel(const char[] sMapName);
+native void L4D2_ChangeLevel(const char[] sMapName);
 
 public SharedPlugin __pl_l4d2_changelevel = 
 {
