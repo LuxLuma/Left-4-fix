@@ -37,7 +37,7 @@
 			/* Used solely to get the offset for TheDirector*/
 			"DirectorMusicBanks_OnRoundStart"
 			{
-				"library"	"server"
+				"library"		"server"
 				/* https://github.com/Accelerator74/Left4Downtown2/blob/master/gamedata/left4downtown.l4d2.txt#L250-L260 credit to Accelerator for sig */
 				"windows"       "\x55\x8B\xEC\x83\xEC\x2A\x56\x57\x8B\xF9\x8B\x0D\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x84"
 				/* 55 8B EC 83 EC ? 56 57 8B F9 8B 0D ? ? ? ? E8 ? ? ? ? 84 */
@@ -46,6 +46,13 @@
 			{
 				"library"	"server"
 				"linux"		"@TheDirector"
+			}
+			"CDirectorChallengeMode::ShutdownScriptedMode"
+			{
+				"library"		"server"
+				"linux"			"_ZN22CDirectorChallengeMode20ShutdownScriptedModeE15eShutdownReasonPKc"
+				"windows"       "\x55\x8B\xEC\x83\xEC\x10\x56\x8B\xF1\x80\x3E\x00"
+				/* 55 8B EC 83 EC 10 56 8B F1 80 3E 00 */
 			}
 		}
 	}
