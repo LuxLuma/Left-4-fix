@@ -20,13 +20,6 @@
 		}
 		"Signatures"
 		{
-			"InfoChangelevel::ChangeLevelNow"
-			{
-				"library"		"server"
-				"linux"			"@_ZN15InfoChangelevel14ChangeLevelNowEv"
-				"windows"		"\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x01\x8B\x50\x3C"
-								/* 56 8B F1 8B 0D ? ? ? ? 8B 01 8B 50 3C */
-			}
 			"CDirector::OnChangeChapterVote"
 			{
 				"library"		"server"
@@ -46,13 +39,6 @@
 			{
 				"library"	"server"
 				"linux"		"@TheDirector"
-			}
-			"CDirectorChallengeMode::ShutdownScriptedMode"
-			{
-				"library"		"server"
-				"linux"			"_ZN22CDirectorChallengeMode20ShutdownScriptedModeE15eShutdownReasonPKc"
-				"windows"       "\x55\x8B\xEC\x83\xEC\x10\x56\x8B\xF1\x80\x3E\x00"
-				/* 55 8B EC 83 EC 10 56 8B F1 80 3E 00 */
 			}
 		}
 	}
