@@ -25,7 +25,7 @@
 
 #pragma newdecls required
 
-#define GAMEDATA "witch_update_witch_nbm"
+#define GAMEDATA "witch_update_nbm"
 
 #define WITCH_UPDATE_FREQUENCY 0.033
 

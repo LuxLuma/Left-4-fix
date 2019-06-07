@@ -3,7 +3,7 @@
 	"left4dead2"
 	{
 		"Functions"
-        {
+		{
 			"NextBotManager::ShouldUpdate"
 			{
 				"signature"  "NextBotManager::ShouldUpdate"
@@ -11,12 +11,12 @@
 				"return"  "bool"
 				"this"  "ignore"
 				"arguments"
-                {
-                    "EntIndex"
-                    {
-                        "type"    "charptr"
-                    }
-                }
+				{
+					"EntIndex"
+					{
+						"type"    "charptr"
+					}
+				}
 			}
 			"NextBotCombatCharacter::DoThink"
 			{
@@ -32,12 +32,12 @@
 				"return"  "bool"
 				"this"  "address"
 				"arguments"
-                {
-                    "SwipeTargetEntity"
-                    {
-                        "type"    "cbaseentity"
-                    }
-                }
+				{
+					"SwipeTargetEntity"
+					{
+						"type"    "cbaseentity"
+					}
+				}
 			}
 			"WitchAttack::OnMoveToFailure"
 			{
@@ -46,24 +46,24 @@
 				"return"  "void"
 				"this"  "address"
 				"arguments"
-                {
-                    "SomeFloatPtr"
-                    {
-                        "type"    "objectptr"
-                    }
+				{
+					"SomeFloatPtr"
+					{
+						"type"    "objectptr"
+					}
 					"Witch"
-                    {
-                        "type"    "cbaseentity"
-                    }
+					{
+						"type"    "cbaseentity"
+					}
 					"WitchPathPtr"
-                    {
-                        "type"    "objectptr"
-                    }
+					{
+						"type"    "objectptr"
+					}
 					"MoveToFailureType"
-                    {
-                        "type"    "int"
-                    }
-                }
+					{
+						"type"    "int"
+					}
+				}
 			}
 		}
 		"Signatures"

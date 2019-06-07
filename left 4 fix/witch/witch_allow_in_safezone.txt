@@ -3,7 +3,7 @@
 	"left4dead2"
 	{
 		"Functions"
-        {
+		{
 			"CDirector::AllowWitchesInCheckpoints"
 			{
 				"signature"  "CDirector::AllowWitchesInCheckpoints"
