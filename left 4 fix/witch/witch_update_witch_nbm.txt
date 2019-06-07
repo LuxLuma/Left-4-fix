@@ -1,0 +1,105 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Functions"
+        {
+			"NextBotManager::ShouldUpdate"
+			{
+				"signature"  "NextBotManager::ShouldUpdate"
+				"callconv"  "thiscall"
+				"return"  "bool"
+				"this"  "ignore"
+				"arguments"
+                {
+                    "EntIndex"
+                    {
+                        "type"    "charptr"
+                    }
+                }
+			}
+			"NextBotCombatCharacter::DoThink"
+			{
+				"signature"  "NextBotCombatCharacter::DoThink"
+				"callconv"  "thiscall"
+				"return"  "void"
+				"this"  "entity"
+			}
+			"Witch::DoAttack"
+			{
+				"signature"  "Witch::DoAttack"
+				"callconv"  "thiscall"
+				"return"  "bool"
+				"this"  "address"
+				"arguments"
+                {
+                    "SwipeTargetEntity"
+                    {
+                        "type"    "cbaseentity"
+                    }
+                }
+			}
+			"WitchAttack::OnMoveToFailure"
+			{
+				"signature"  "WitchAttack::OnMoveToFailure"
+				"callconv"  "thiscall"
+				"return"  "void"
+				"this"  "address"
+				"arguments"
+                {
+                    "SomeFloatPtr"
+                    {
+                        "type"    "objectptr"
+                    }
+					"Witch"
+                    {
+                        "type"    "cbaseentity"
+                    }
+					"WitchPathPtr"
+                    {
+                        "type"    "objectptr"
+                    }
+					"MoveToFailureType"
+                    {
+                        "type"    "int"
+                    }
+                }
+			}
+		}
+		"Signatures"
+		{
+			"NextBotManager::ShouldUpdate"
+			{
+				"library"		"server"
+				"linux"			"@_ZN14NextBotManager12ShouldUpdateEP8INextBot"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x08\x57\x8B\xF9\x83\x7F\x24\x01"
+								/* 55 8B EC 83 EC 08 57 8B F9 83 7F 24 01 */
+				
+			}
+			"NextBotCombatCharacter::DoThink"
+			{
+				"library"		"server"
+				"linux"			"@_ZN22NextBotCombatCharacter7DoThinkEv"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x18\xA1\x2A\x2A\x2A\x2A\x53\x56\x33\xF6"
+								/* 55 8B EC 83 EC 18 A1 ? ? ? ? 53 56 33 F6 */
+				
+			}
+			"Witch::DoAttack"
+			{
+				"library"		"server"
+				"linux"			"@_ZN5Witch8DoAttackEP11CBaseEntity"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x1C\x8B\x45\x08\x56"
+								/* 55 8B EC 83 EC 1C 8B 45 08 56 */
+				
+			}
+			"WitchAttack::OnMoveToFailure"
+			{
+				"library"		"server"
+				"linux"			"@_ZN11WitchAttack15OnMoveToFailureEP8InfectedPK4Path17MoveToFailureType"
+				"windows"		"\x55\x8B\xEC\x8B\x45\x14\x83\xE8\x00"
+								/* 55 8B EC 8B 45 14 83 E8 00 */
+				
+			}
+		}
+	}
+}

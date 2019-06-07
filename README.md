@@ -15,7 +15,5 @@ https://forums.alliedmods.net/showthread.php?t=315481
 l4d2_changelevel -> Creates a clean way to change maps, sm_map causes leaks and other spooky stuff causing server perf to be worse over time.
 Because l4d2's vscript system is the best!
 
-l4d2_changelevel_auto -> is not functing and will crash it's something i'm playing with to figure out with out needing a different native to change level.
-
 
 Left 4 Fix is a repo of stuff valve should fix for left 4 dead1/2 but have not, why this exists.
