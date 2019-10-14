@@ -74,43 +74,9 @@ public void OnPluginStart()
 	
 	delete hGamedata;
 	
-	RegServerCmd("sm_changelevelex", ChangelevelEx, "L4D2 changelevel method to release all resources");
 	RegAdminCmd("sm_changelevel", Changelevel, ADMFLAG_ROOT, "L4D2 changelevel method to release all resources");
 }
 
-public Action CmdMapChange(int iClient, const char[] sCommand, int iArg)
-{
-	if(GetCmdArgs() < 1)
-		return Plugin_Continue;
-		
-	char sMapName[256];
-	GetCmdArg(1, sMapName, sizeof(sMapName));
-	if(sMapName[0] == '\0')
-		return Plugin_Continue;
-	
-	char temp[1];
-	if(FindMap(sMapName, temp, sizeof(temp)) == FindMap_NotFound)
-		return Plugin_Continue;
-	
-	L4D2_ChangeLevel(sMapName);
-	return Plugin_Handled;
-}
-
-public Action ChangelevelEx(int iArg)
-{
-	char sMapName[PLATFORM_MAX_PATH];
-	char temp[1];
-	
-	GetCmdArg(1, sMapName, sizeof(sMapName));
-	if(sMapName[0] == '\0' || FindMap(sMapName, temp, sizeof(temp)) == FindMap_NotFound)
-	{
-		PrintToServer("sm_changelevelex Unable to find map \"%s\"", sMapName);
-		return Plugin_Handled;
-	}
-	
-	L4D2_ChangeLevel(sMapName);
-	return Plugin_Handled;
-}
 public Action Changelevel(int iClient, int iArg)
 {
 	char sMapName[PLATFORM_MAX_PATH];
