@@ -50,7 +50,7 @@ public Plugin myinfo =
 	author = "Lux",
 	description = "Creates a clean way to change maps, sm_map causes leaks and other spooky stuff causing server perf to be worse over time.",
 	version = PLUGIN_VERSION,
-	url = "-"
+	url = "https://forums.alliedmods.net/showthread.php?p=2669850"
 };
 
 public void OnPluginStart()
