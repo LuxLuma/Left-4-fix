@@ -24,7 +24,7 @@
 
 #pragma newdecls required
 
-#define PLUGIN_VERSION	"1.0.1"
+#define PLUGIN_VERSION	"1.0.2"
 
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -83,9 +83,9 @@ public void PostThinkPostSurvivor(int iClient)
 	static float fPos2[3];
 	GetClientAbsOrigin(iPounceAttacker, fPos2);
 	
-	if(GetVectorDistance(fPos, fPos2) < 5.0)
+	if(GetVectorDistance(fPos, fPos2) == 0.0)
 		return;
 	
-	TeleportEntity(iClient, fPos, NULL_VECTOR, NULL_VECTOR);//stops lagcomp
+	TeleportEntity(iClient, fPos, NULL_VECTOR, NULL_VECTOR);
 	TeleportEntity(iPounceAttacker, fPos, NULL_VECTOR, NULL_VECTOR);
 }
