@@ -24,9 +24,10 @@
 
 #pragma newdecls required
 
-#define PLUGIN_VERSION "1.1.2"
+#define PLUGIN_VERSION "1.2.0"
 
 static Handle hDirectorChangeLevel;
+static Handle hDirectorClearTeamScores;
 
 //Credit ProdigySim for l4d2_direct reading of TheDirector class https://forums.alliedmods.net/showthread.php?t=180028
 static Address TheDirector = Address_Null;
@@ -72,6 +73,16 @@ public void OnPluginStart()
 	if(TheDirector == Address_Null)
 		SetFailState("Unable to get 'CDirector' Address");
 	
+	
+	StartPrepSDKCall(SDKCall_Raw);
+	if(!PrepSDKCall_SetFromConf(hGamedata, SDKConf_Signature, "CDirector::ClearTeamScores"))
+		SetFailState("Error finding the 'CDirector::ClearTeamScores' signature.");
+	PrepSDKCall_AddParameter(SDKType_Bool, SDKPass_Plain);
+	
+	hDirectorClearTeamScores = EndPrepSDKCall();
+	if(hDirectorClearTeamScores == null)
+		SetFailState("Unable to prep SDKCall 'CDirector::OnChangeChapterVote'");
+	
 	delete hGamedata;
 	
 	RegAdminCmd("sm_changelevel", Changelevel, ADMFLAG_ROOT, "L4D2 changelevel method to release all resources");
@@ -96,6 +107,7 @@ public Action Changelevel(int iClient, int iArg)
 void L4D2_ChangeLevel(const char[] sMapName)
 {
 	PrintToServer("[SM] Changelevel to %s", sMapName);
+	SDKCall(hDirectorClearTeamScores, TheDirector, 1);
 	SDKCall(hDirectorChangeLevel, TheDirector, sMapName);
 }
 

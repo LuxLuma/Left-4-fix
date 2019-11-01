@@ -83,7 +83,7 @@ public void PostThinkPostSurvivor(int iClient)
 	static float fPos2[3];
 	GetClientAbsOrigin(iPounceAttacker, fPos2);
 	
-	if(GetVectorDistance(fPos, fPos2) < 5.0)
+	if(GetVectorDistance(fPos, fPos2) < 2.5)
 		return;
 	
 	TeleportEntity(iClient, fPos, NULL_VECTOR, NULL_VECTOR);//stops lagcomp
