@@ -81,7 +81,7 @@ public void OnPluginStart()
 	
 	hDirectorClearTeamScores = EndPrepSDKCall();
 	if(hDirectorClearTeamScores == null)
-		SetFailState("Unable to prep SDKCall 'CDirector::OnChangeChapterVote'");
+		SetFailState("Unable to prep SDKCall 'CDirector::ClearTeamScores'");
 	
 	delete hGamedata;
 	
