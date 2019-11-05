@@ -25,7 +25,14 @@
 #pragma newdecls required
 
 #define GAMEDATA "witch_target_patch"
-#define PLUGIN_VERSION	"1.0"
+#define PLUGIN_VERSION	"1.1"
+
+bool bDidPatch;
+
+Address GetVictim = Address_Null;
+Address OnStart = Address_Null;
+Address OnAnimationEvent = Address_Null;
+Address Update = Address_Null;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -67,14 +74,18 @@ public void OnPluginStart()
 			byte = LoadFromAddress(patch + view_as<Address>(offset), NumberType_Int8);
 			if(byte == 0x74)
 			{
-				StoreToAddress(patch + view_as<Address>(offset), 0x7E, NumberType_Int8);
+				GetVictim = patch + view_as<Address>(offset);
+				StoreToAddress(GetVictim, 0x7E, NumberType_Int8);
 				PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::GetVictim'");
+				bDidPatch = true;
 				return;
 			}
 			else if(byte == 0x75)
 			{
-				StoreToAddress(patch + view_as<Address>(offset), 0x7F, NumberType_Int8);
+				GetVictim = patch + view_as<Address>(offset);
+				StoreToAddress(GetVictim, 0x7F, NumberType_Int8);
 				PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::GetVictim'");
+				bDidPatch = true;
 			}
 			else
 			{
@@ -101,8 +112,10 @@ public void OnPluginStart()
 			byte = LoadFromAddress(patch + view_as<Address>(offset), NumberType_Int8);
 			if(byte == 0x75)
 			{
-				StoreToAddress(patch + view_as<Address>(offset), 0x7F, NumberType_Int8);
+				OnStart = patch + view_as<Address>(offset);
+				StoreToAddress(OnStart, 0x7F, NumberType_Int8);
 				PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::OnStart'");
+				bDidPatch = true;
 			}
 			else
 			{
@@ -128,8 +141,10 @@ public void OnPluginStart()
 			byte = LoadFromAddress(patch + view_as<Address>(offset), NumberType_Int8);
 			if(byte == 0x75)
 			{
-				StoreToAddress(patch + view_as<Address>(offset), 0x7F, NumberType_Int8);
+				OnAnimationEvent = patch + view_as<Address>(offset);
+				StoreToAddress(OnAnimationEvent, 0x7F, NumberType_Int8);
 				PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::OnAnimationEvent'");
+				bDidPatch = true;
 			}
 			else
 			{
@@ -155,8 +170,10 @@ public void OnPluginStart()
 			byte = LoadFromAddress(patch + view_as<Address>(offset), NumberType_Int8);
 			if(byte == 0x75)
 			{
-				StoreToAddress(patch + view_as<Address>(offset), 0x7F, NumberType_Int8);
+				Update = patch + view_as<Address>(offset);
+				StoreToAddress(Update, 0x7F, NumberType_Int8);
 				PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::Update'");
+				bDidPatch = true;
 			}
 			else
 			{
@@ -173,4 +190,58 @@ public void OnPluginStart()
 		LogError("Error finding the 'WitchAttack::Update' signature.");
 	}
 	delete hGamedata;
+}
+
+public void OnPluginEnd()
+{
+	if(!bDidPatch)
+		return;
+	
+	int byte;
+	
+	if(GetVictim != Address_Null)
+	{
+		byte = LoadFromAddress(view_as<Address>(GetVictim), NumberType_Int8);
+		if(byte == 0x7E)
+		{
+			StoreToAddress(view_as<Address>(GetVictim), 0x74, NumberType_Int8);
+			PrintToServer("WitchPatch restored 'WitchAttack::GetVictim'");
+			return;
+		}
+		else if(byte == 0x7F)
+		{
+			StoreToAddress(view_as<Address>(GetVictim), 0x75, NumberType_Int8);
+			PrintToServer("WitchPatch restored 'WitchAttack::GetVictim'");
+		}
+	}
+	
+	if(OnStart != Address_Null)
+	{
+		byte = LoadFromAddress(OnStart, NumberType_Int8);
+		if(byte == 0x7F)
+		{
+			StoreToAddress(OnStart, 0x75, NumberType_Int8);
+			PrintToServer("WitchPatch restored 'WitchAttack::OnStart'");
+		}
+	}
+	
+	if(OnAnimationEvent != Address_Null)
+	{
+		byte = LoadFromAddress(OnAnimationEvent, NumberType_Int8);
+		if(byte == 0x7F)
+		{
+			StoreToAddress(OnAnimationEvent, 0x75, NumberType_Int8);
+			PrintToServer("WitchPatch restored 'WitchAttack::OnAnimationEvent'");
+		}
+	}
+	
+	if(Update != Address_Null)
+	{
+		byte = LoadFromAddress(Update, NumberType_Int8);
+		if(byte == 0x7F)
+		{
+			StoreToAddress(Update, 0x75, NumberType_Int8);
+			PrintToServer("WitchPatch restored 'WitchAttack::Update'");
+		}
+	}
 }
