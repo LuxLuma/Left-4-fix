@@ -25,9 +25,11 @@
 #pragma newdecls required
 
 #define GAMEDATA "charger_collision_patch"
-#define PLUGIN_VERSION	"1.0"
+#define PLUGIN_VERSION	"1.1"
 
 static float g_fPreventDamage[MAXPLAYERS+1][MAXPLAYERS+1];
+
+Address Collision_Address = Address_Null;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -69,7 +71,8 @@ public void OnPluginStart()
 	int byte = LoadFromAddress(patch + view_as<Address>(offset), NumberType_Int8);
 	if(byte == 0x01)
 	{
-		StoreToAddress(patch + view_as<Address>(offset), 0x00, NumberType_Int8);
+		Collision_Address = patch + view_as<Address>(offset);
+		StoreToAddress(Collision_Address, 0x00, NumberType_Int8);
 		PrintToServer("ChargerCollision patch applied 'CCharge::HandleCustomCollision'");
 		
 		Handle hConvar = FindConVar("z_charge_max_force");
@@ -152,4 +155,23 @@ public Action BlockRecursiveDamage(int iVictim, int &iCharger, int &iInflictor, 
 			
 	}
 	return Plugin_Continue;
+}
+
+public void OnPluginEnd()
+{
+	if(Collision_Address == Address_Null)
+		return;
+	
+	StoreToAddress(Collision_Address, 0x01, NumberType_Int8);
+	PrintToServer("ChargerCollision patch restored 'CCharge::HandleCustomCollision'");
+	
+	Handle hConvar = FindConVar("z_charge_max_force");
+	UnhookConVarChange(hConvar, ScaleDownCvar);
+	SetConVarFloat(hConvar, GetConVarFloat(hConvar) / 0.25);
+	
+	hConvar = FindConVar("z_charge_min_force");
+	UnhookConVarChange(hConvar, ScaleDownCvar);
+	SetConVarFloat(hConvar, GetConVarFloat(hConvar) / 0.25);
+	
+	PrintToServer("ChargerCollision restored 'z_charge_max_force/z_charge_min_force' convars'");
 }
