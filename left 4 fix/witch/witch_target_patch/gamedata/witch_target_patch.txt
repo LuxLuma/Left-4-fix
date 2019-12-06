@@ -54,8 +54,8 @@
 			"WitchAttack::OnStart"
 			{
 				"library"		"server"
-				"windows"		"\x2A\x2A\x2A\x2A\xEC\x30\x8B\x15\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\x2A\x8B\x2A\x2A"
-								/* ? ? ? ? ? ? 8B 15 ? ? ? ? 53 56 57 8B ? ? 8B ? ? */
+				"windows"		"\x2A\x2A\x2A\x2A\xEC\x30\x8B\x15\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\x2A\x8B"
+								/* ? ? ? ? ? ? 8B 15 ? ? ? ? 53 56 57 8B ? ? 8B */
 			}
 			"WitchAttack::OnAnimationEvent"
 			{
@@ -66,8 +66,8 @@
 			"WitchAttack::Update"
 			{
 				"library"		"server"
-				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\x2A\x8B\x87\x2A\x2A\x2A\x2A\x8B\x90\x2A\x2A\x2A\x2A\x81\xC7\x2A\x2A\x2A\x2A"
-								/* ? ? ? ? ? ? 53 56 57 8B ? ? 8B 87 ? ? ? ? 8B 90 ? ? ? ? 81 C7 ? ? ? ? */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\x2A\x8B\x87\x2A\x2A\x2A\x2A\x8B\x90\x2A\x2A\x2A\x2A\x81\xC7"
+								/* ? ? ? ? ? ? 53 56 57 8B ? ? 8B 87 ? ? ? ? 8B 90 ? ? ? ? 81 C7 */
 			}
 		}
 	}
