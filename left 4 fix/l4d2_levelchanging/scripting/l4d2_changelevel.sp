@@ -24,7 +24,7 @@
 
 #pragma newdecls required
 
-#define PLUGIN_VERSION "1.2.0"
+#define PLUGIN_VERSION "1.2.1"
 
 static Handle hDirectorChangeLevel;
 static Handle hDirectorClearTeamScores;
