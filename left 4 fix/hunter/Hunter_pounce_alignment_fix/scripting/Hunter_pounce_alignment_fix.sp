@@ -57,7 +57,7 @@ public Plugin myinfo =
 	url = "-"
 };
 
-
+// followed this example https://github.com/nosoop/SM-TFCustomAttributeStarterPack/blob/master/scripting/cloak_debuff_time_scale.sp thanks noscoop
 public void OnPluginStart()
 {
 	CreateConVar("hunter_pounce_alignment_fix_version", PLUGIN_VERSION, "", FCVAR_NOTIFY|FCVAR_DONTRECORD);
