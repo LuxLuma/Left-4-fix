@@ -21,26 +21,21 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <dhooks>
 
 #pragma newdecls required
 
-#define PLUGIN_VERSION	"1.1"
+#define GAMEDATA "defib_fix"
 
-enum DeathModelType
-{
-	DeathModelType_EntityRef = 0,
-	DeathModelType_CharIndex,
-}
+#define PLUGIN_VERSION	"2.0"
 
-static ConVar hCvar_Defib_All;
-static bool g_bDefibAnyone = false;
 
-static int g_iClientCharIDs[MAXPLAYERS+1][MAXPLAYERS+1];
-static bool g_bReapplyChars[MAXPLAYERS+1] = {false, ...};
-static int g_iDeathModelRef[MAXPLAYERS+1][2];
+Handle hOnActionComplete;
+Handle hOnStartAction;
 
-static bool bIgnore = false;
-static int iDeathModelRef;
+bool g_bFixChar;
+int g_iCurrentDeathModel;
+int g_iDeathModelOwner[2048+1];
 
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -53,7 +48,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
-
 public Plugin myinfo =
 {
 	name = "[L4D2]Defib_Fix",
@@ -65,165 +59,175 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	Handle hGamedata = LoadGameConfigFile(GAMEDATA);
+	if(hGamedata == null) 
+		SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA);
+	
+	hOnActionComplete = DHookCreateFromConf(hGamedata, "CItemDefibrillator::OnActionComplete");
+	if(hOnActionComplete == null)
+		SetFailState("Failed to make hook for 'CItemDefibrillator::OnActionComplete'");
+	
+	hOnStartAction = DHookCreateFromConf(hGamedata, "CItemDefibrillator::OnStartAction");
+	if(hOnStartAction == null)
+		SetFailState("Failed to make hook for 'CItemDefibrillator::OnStartAction'");
+	
+	Handle hDetour;
+	hDetour = DHookCreateFromConf(hGamedata, "CTerrorPlayer::GetPlayerByCharacter");
+	if(!hDetour)
+		SetFailState("Failed to find 'CTerrorPlayer::GetPlayerByCharacter' signature");
+	
+	if(!DHookEnableDetour(hDetour, false, GetPlayerByCharacter))
+		SetFailState("Failed to detour 'CTerrorPlayer::GetPlayerByCharacter'");
+	
+	hDetour = DHookCreateFromConf(hGamedata, "CSurvivorDeathModel::Create");
+	if(!hDetour)
+		SetFailState("Failed to find 'CSurvivorDeathModel::Create' signature");
+	
+	if(!DHookEnableDetour(hDetour, false, DeathModelCreatePre))
+		SetFailState("Failed to detour 'CSurvivorDeathModel::Create'");
+	
+	if(!DHookEnableDetour(hDetour, true, DeathModelCreatePost))
+		SetFailState("Failed to detour 'CSurvivorDeathModel::Create'");
+	
+	delete hGamedata;
+	
 	CreateConVar("defib_fix_version", PLUGIN_VERSION, "", FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	hCvar_Defib_All = CreateConVar("df_defib_all", "0", "Allowed to defib anyone from any body?", FCVAR_NOTIFY);
-	hCvar_Defib_All.AddChangeHook(eConvarChanged);
-	AutoExecConfig(true, "defib_fix");
-	CvarsChanged();
-	
-	HookEvent("round_start", OnRoundStart);
-	HookEvent("player_death", ePlayerDeath, EventHookMode_Pre);
-}
-
-public void eConvarChanged(Handle hCvar, const char[] sOldVal, const char[] sNewVal)
-{
-	CvarsChanged();
-}
-
-void CvarsChanged()
-{
-	g_bDefibAnyone = hCvar_Defib_All.IntValue > 0;
-}
-
-public void OnRoundStart(Event hEvent, const char[] sName, bool bDontBroadcast)
-{
-	for(int i; i < sizeof(g_iClientCharIDs); i++)
-		for(int ii; ii < sizeof(g_iClientCharIDs[]); ii++)
-			g_iClientCharIDs[i][ii] = -1;
-}
-
-public void OnClientPutInServer(int iClient)
-{
-	if(!IsFakeClient(iClient))
-	{
-		SDKHook(iClient, SDKHook_PostThink, PostThink);
-		SDKHook(iClient, SDKHook_PostThinkPost, ThinkPost);
-	}
-	
-	for(int i; i < sizeof(g_iClientCharIDs); i++)
-		g_iClientCharIDs[iClient][i] = -1;
 }
 
 public void OnEntityCreated(int iEntity, const char[] sClassname)
 {
-	if(sClassname[0] != 's')
+	if(sClassname[0] != 'w' || !StrEqual(sClassname, "weapon_defibrillator", false))
 	 	return;
-	 	
-	if(StrEqual(sClassname, "survivor_death_model", false))
-		SDKHook(iEntity, SDKHook_SpawnPost, SpawnPostDeathModel);
-	else if(StrEqual(sClassname, "survivor_bot"))
-	{
-		//incase using death chaos's defib plugin
-		SDKHook(iEntity, SDKHook_PostThink, PostThink);
-		SDKHook(iEntity, SDKHook_PostThinkPost, ThinkPost);
-	}
+	
+	DHookEntity(hOnActionComplete, false, iEntity, _, OnActionCompletePre);
+	DHookEntity(hOnActionComplete, true, iEntity, _, OnActionCompletePost);
+	DHookEntity(hOnStartAction, false, iEntity, _, OnStartActionPre);
 }
 
-public void PostThink(int iClient)
+public MRESReturn OnActionCompletePre(Handle hReturn, Handle hParams)
 {
-	if(!IsPlayerAlive(iClient) || GetClientTeam(iClient) != 2)
-		return;
+	int iDeathModel = DHookGetParam(hParams, 2);
+	if(!iDeathModel)
+		return MRES_Ignored;
 	
-	if(GetEntProp(iClient, Prop_Send, "m_iCurrentUseAction", 1) != 4 || GetEntPropEnt(iClient, Prop_Send, "m_useActionOwner") != iClient)
-		return;
-	
-	int iDeathModel = GetEntPropEnt(iClient, Prop_Send, "m_useActionTarget");
-	if(iDeathModel < 1 || !IsValidEntity(iDeathModel))
-		return;
-	
-	int iDeathModelCharIndex = GetEntProp(iDeathModel, Prop_Send, "m_nCharacterType", 4);
-	
-	if(g_bDefibAnyone)
+	if(IsAllSurvivorsAlive())//rare case
 	{
-		int iOrignalDeathModeChar = iDeathModelCharIndex;
-		if(DeathModelConvert(iDeathModel, iDeathModelCharIndex))
-		{
-			g_iDeathModelRef[iClient][DeathModelType_EntityRef] = EntIndexToEntRef(iDeathModel);
-			g_iDeathModelRef[iClient][DeathModelType_CharIndex] = iOrignalDeathModeChar;
-		}
+		KillAllDeathModels();
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
 	}
-		
-	iDeathModelCharIndex = ConvertToInternalCharacter(iDeathModelCharIndex);
-	int iSurvivorChar;
-	int iSurvivorCharConvert;
+	
+	g_iCurrentDeathModel = iDeathModel;
+	g_bFixChar = true;
+	return MRES_Ignored;
+}
+
+public MRESReturn OnActionCompletePost(Handle hReturn, Handle hParams)
+{
+	if(IsAllSurvivorsAlive())
+		KillAllDeathModels();
+	
+	g_bFixChar = false;//just incase	
+	return MRES_Ignored;
+}
+
+public MRESReturn GetPlayerByCharacter(Handle hReturn, Handle hParams)
+{
+	if(!g_bFixChar)
+		return MRES_Ignored;
+	g_bFixChar = false;
+	
+	static int iChar[MAXPLAYERS+1];
+	
+	int iCurrentChar = GetClientOfUserId(g_iDeathModelOwner[g_iCurrentDeathModel]);
+	if(iCurrentChar > 0 && IsClientInGame(iCurrentChar) && !IsPlayerAlive(iCurrentChar) && GetClientTeam(iCurrentChar) == 2)//check if owner of model death model is dead
+	{
+		DHookSetReturn(hReturn, iCurrentChar);
+		return MRES_Supercede;
+	}
+	
+	iCurrentChar = DHookGetParam(hParams, 1);
 	
 	for(int i = 1; i <= MaxClients; i++)
 	{
-		if(!IsClientInGame(i) || GetClientTeam(i) != 2 || !IsPlayerAlive(i))
-			continue;
-		
-		g_bReapplyChars[iClient] = true;
-		
-		iSurvivorChar = GetEntProp(i, Prop_Send, "m_survivorCharacter", 1);
-		iSurvivorCharConvert = ConvertToInternalCharacter(iSurvivorChar);
-		
-		if(iDeathModelCharIndex == iSurvivorCharConvert)
+		if(IsClientInGame(i) && !IsPlayerAlive(i) && GetClientTeam(i) == 2)
 		{
-			g_iClientCharIDs[iClient][i] = iSurvivorChar;
-			SetEntProp(i, Prop_Send, "m_survivorCharacter", (iSurvivorCharConvert == 3) ? --iSurvivorCharConvert : ++iSurvivorCharConvert);
+			iChar[i] = GetEntProp(i, Prop_Send, "m_survivorCharacter", 1);
+			if(iCurrentChar == iChar[i])//if found player same char type
+			{
+				DHookSetReturn(hReturn, i);
+				return MRES_Supercede;
+			}
 		}
-	}
-}
-
-bool DeathModelConvert(int iDeathModel, int &iDeathModelCharIndex)
-{
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientInGame(i) && GetClientTeam(i) == 2 && !IsPlayerAlive(i))
+		else
 		{
-			if(iDeathModelCharIndex == GetEntProp(i, Prop_Send, "m_survivorCharacter", 1))
-				return false;
+			iChar[i] = -1;
 		}
 	}
 	
+	int iFoundPlayer;
+	iCurrentChar = ConvertToInternalCharacter(iCurrentChar);
 	for(int i = 1; i <= MaxClients; i++)
 	{
-		if(IsClientInGame(i) && GetClientTeam(i) == 2 && !IsPlayerAlive(i))
+		if(iChar[i] != -1)
+			iFoundPlayer = i;//fallback incase noone matches
+		
+		if(iCurrentChar == iChar[i])
 		{
-			int iSurvivorChar = GetEntProp(i, Prop_Send, "m_survivorCharacter", 1);
-			iDeathModelCharIndex = (iSurvivorChar == 8) ? 0 : iSurvivorChar; //should never happen but if someone is char 8 convert to 0
-			SetEntProp(iDeathModel, Prop_Send, "m_nCharacterType", iDeathModelCharIndex, 4);
-			return true;
+			iFoundPlayer = i;
+			break;
 		}
 	}
-	return false;
+	if(!iFoundPlayer)
+		return MRES_Ignored;//better safe than sorry
+	
+	DHookSetReturn(hReturn, iFoundPlayer);
+	return MRES_Supercede;
 }
 
-public void ThinkPost(int iClient)
+public MRESReturn OnStartActionPre(Handle hReturn, Handle hParams)
 {
-	if(!g_bReapplyChars[iClient])
+	if(IsAllSurvivorsAlive())
+		KillAllDeathModels();
+	
+	DHookSetReturn(hReturn, 0);
+	return MRES_Supercede;
+}
+
+int g_iTempClient;
+public MRESReturn DeathModelCreatePost(int pThis, Handle hReturn)
+{
+	int iDeathModel = DHookGetReturn(hReturn);
+	if(!iDeathModel)
+		return MRES_Ignored;
+	
+	float vPos[3];
+	GetClientAbsOrigin(g_iTempClient, vPos);
+	
+	TeleportEntity(iDeathModel, vPos, NULL_VECTOR, NULL_VECTOR);
+	
+	g_iDeathModelOwner[iDeathModel] = GetClientUserId(g_iTempClient);
+	return MRES_Ignored;
+}
+
+public MRESReturn DeathModelCreatePre(int pThis)
+{
+	g_iTempClient = pThis;
+}
+
+public void OnEntityDestroyed(int iEntity)
+{
+	if(iEntity < 1)
 		return;
 	
-	g_bReapplyChars[iClient] = false;
-	
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientInGame(i) && GetClientTeam(i) == 2 && IsPlayerAlive(i))
-		{
-			if(g_iClientCharIDs[iClient][i] != -1)
-				SetEntProp(i, Prop_Send, "m_survivorCharacter", g_iClientCharIDs[iClient][i]);
-		}
-		g_iClientCharIDs[iClient][i] = -1;
-	}
-	
-	if(IsValidEntRef(g_iDeathModelRef[iClient][DeathModelType_EntityRef]))
-	{
-		SetEntProp(g_iDeathModelRef[iClient][DeathModelType_EntityRef], Prop_Send, "m_nCharacterType", g_iDeathModelRef[iClient][DeathModelType_CharIndex], 4);
-	}
+	g_iDeathModelOwner[iEntity] = 0;
 }
 
-static bool IsValidEntRef(int iEnt)
-{
-	return (iEnt != 0 && EntRefToEntIndex(iEnt) != INVALID_ENT_REFERENCE);
-}
-
-//Convert char indexs like the game engine does.
 int ConvertToInternalCharacter(int iChar)
 {
-	//to not have to use SDKCall for survivor_set downconvert everytime.
 	switch(iChar)
 	{
-		case 4, 8:
+		case 4:
 		{
 			return 0;
 		}
@@ -239,80 +243,31 @@ int ConvertToInternalCharacter(int iChar)
 		{
 			return 2;
 		}
-		default:
+		case 9:
 		{
-			return iChar;
+			return 8;
 		}
 	}
-	return iChar;
+	return iChar;// some people set survivors to 8 or 9 index so revive them too
 }
 
-/*
-signed int __cdecl ConvertToInternalCharacter(signed int a1)
+bool IsAllSurvivorsAlive()
 {
-  bool v1; // zf
-  signed int result; // eax
-
-  v1 = CTerrorGameRules::FastGetSurvivorSet() == 1;
-  result = a1;
-  if ( v1 )
-  {
-    switch ( a1 )
-    {
-      case 4:
-        result = 0;
-        break;
-      case 5:
-        result = 1;
-        break;
-      case 6:
-        result = 3;
-        break;
-      case 7:
-        result = 2;
-        break;
-      default:
-        return result;
-    }
-  }
-  return result;
-}
-*/
-
-public void ePlayerDeath(Handle hEvent, const char[] sEventName, bool bDontBroadcast)
-{
-	int iVictim = GetClientOfUserId(GetEventInt(hEvent, "userid"));
-	if(iVictim < 1 || iVictim > MaxClients || !IsClientInGame(iVictim) || GetClientTeam(iVictim) != 2)
-		return;
-	
-	if(!IsValidEntRef(iDeathModelRef))
-		return;
-	
-	float fPos[3];
-	GetClientAbsOrigin(iVictim, fPos);
-	int iEnt = EntRefToEntIndex(iDeathModelRef);
-	iDeathModelRef = INVALID_ENT_REFERENCE;
-	TeleportEntity(iEnt, fPos, NULL_VECTOR, NULL_VECTOR);// fix valve issue with teleporting clones
-
+	for(int i = 1; i <= MaxClients; i++)// rare case it could happen
+	{
+		if(IsClientInGame(i) && !IsPlayerAlive(i) && GetClientTeam(i) == 2)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
-public void SpawnPostDeathModel(int iEntity)
+void KillAllDeathModels()
 {
-	SDKUnhook(iEntity, SDKHook_SpawnPost, SpawnPostDeathModel);
-	if(!IsValidEntity(iEntity))
-		return;
-	
-	iDeathModelRef = EntIndexToEntRef(iEntity);
-	
-	if(bIgnore)
-		return;
-	
-	bIgnore = true;
-	RequestFrame(ClearVar);
-}
-
-public void ClearVar(any nothing)
-{
-	iDeathModelRef = INVALID_ENT_REFERENCE;
-	bIgnore = false;
+	int i = INVALID_ENT_REFERENCE;
+	while((i = FindEntityByClassname(i, "survivor_death_model")) != INVALID_ENT_REFERENCE)
+	{
+		AcceptEntityInput(i, "Kill");
+	}
 }
