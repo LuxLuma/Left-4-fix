@@ -6,6 +6,9 @@
 # [Defib fix](https://forums.alliedmods.net/showthread.php?t=315483)
 Fixes defib getting wrong targets and reviving alive players, this is semiport of [extension](https://github.com/Satanic-Spirit/defib-fix).
 This exists because of issues with current fix with extension, https://forums.alliedmods.net/showpost.php?p=2635893&postcount=13
+ ##### Extra Requirements
+
+ - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 # Charger
 ### [Charger Collision patch](https://forums.alliedmods.net/showthread.php?t=315482)
