@@ -4,7 +4,7 @@
 
 
 # [Defib fix](https://forums.alliedmods.net/showthread.php?t=315483)
-Still WIP, TODO do proper port of defibfix [extension](https://github.com/Satanic-Spirit/defib-fix).
+Fixes defib getting wrong targets and reviving alive players, this is semiport of [extension](https://github.com/Satanic-Spirit/defib-fix).
 
 # Charger
 ### [Charger Collision patch](https://forums.alliedmods.net/showthread.php?t=315482)
