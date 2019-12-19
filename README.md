@@ -32,7 +32,7 @@ General fixes for witch.
 ## witch_prevent_target_loss
 
 Prevents the witch from randomly loosing target.
-This is still WIP.
+This is still WIP Only fully functions on windows.
 
 ## witch_target_patch
 
