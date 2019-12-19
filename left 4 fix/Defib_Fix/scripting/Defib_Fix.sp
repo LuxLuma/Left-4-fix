@@ -188,10 +188,12 @@ public MRESReturn GetPlayerByCharacter(Handle hReturn, Handle hParams)
 public MRESReturn OnStartActionPre(Handle hReturn, Handle hParams)
 {
 	if(IsAllSurvivorsAlive())
+	{
 		KillAllDeathModels();
-	
-	DHookSetReturn(hReturn, 0);
-	return MRES_Supercede;
+		DHookSetReturn(hReturn, 0);
+		return MRES_Supercede;
+	}
+	return MRES_Ignored;
 }
 
 int g_iTempClient;
