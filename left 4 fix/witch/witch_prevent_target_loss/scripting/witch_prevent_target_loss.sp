@@ -80,8 +80,15 @@ public void OnPluginStart()
 				MoveFailureBytesStore_1[0] = LoadFromAddress(OnMoveToFailure_1, NumberType_Int8);
 				MoveFailureBytesStore_1[1] = LoadFromAddress(OnMoveToFailure_1 + view_as<Address>(1), NumberType_Int8);
 				
-				StoreToAddress(OnMoveToFailure_1, 0x90, NumberType_Int8);
-				StoreToAddress(OnMoveToFailure_1 + view_as<Address>(1), 0x90, NumberType_Int8);
+				if(byte == 0x74)
+				{
+					StoreToAddress(OnMoveToFailure_1, 0x90, NumberType_Int8);
+					StoreToAddress(OnMoveToFailure_1 + view_as<Address>(1), 0x90, NumberType_Int8);
+				}
+				else
+				{
+					StoreToAddress(OnMoveToFailure_1, 0xEB, NumberType_Int8);
+				}
 				PrintToServer("WitchPatch Preventloss patch applied 'WitchAttack::OnMoveToFailure_1'");
 			}
 			else
