@@ -1,0 +1,30 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Addresses"
+		{
+			"AIConceptTable"
+			{
+				"linux"
+				{
+					"signature" "g_pAIConceptTable"
+				}
+				"read" "0"
+			}
+		}
+		"Signatures"
+		{
+			"g_pAIConceptTable"
+			{
+				"library"	"server"
+				"linux"		"@g_pAIConceptTable"
+			}
+			"CUtlSymbolTable::RemoveAll"
+			{
+				"library"		"server"
+				"linux"			"@_ZN15CUtlSymbolTable9RemoveAllEv"
+			}
+		}
+	}
+}

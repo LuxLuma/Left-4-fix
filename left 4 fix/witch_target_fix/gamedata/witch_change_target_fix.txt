@@ -1,0 +1,133 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Functions"
+		{
+			"WitchAttack::SetVictim"
+			{
+				"signature"  "WitchAttack::SetVictim"
+				"callconv"  "thiscall"
+				"return"  "void"
+				"this"  "address"
+				"arguments"
+				{
+					"entity"
+					{
+						"type"    "cbaseentity"
+					}
+				}
+			}
+			"Behavior<Infected>::Update"
+			{
+				"signature"  "Behavior<Infected>::Update"
+				"callconv"  "thiscall"
+				"return"  "void"
+				"this"  "address"
+				"arguments"
+				{
+					"Infected"
+					{
+						"type"    "cbaseentity"
+					}
+					"TimeSinceLastUpdate"
+					{
+						"type"    "float"
+					}
+				}
+			}
+			"WitchAttack::Update"
+			{
+				"signature"  "WitchAttack::Update"
+				"callconv"  "thiscall"
+				"return"  "charptr"
+				"this"  "address"
+				"arguments"
+				{
+					"Infected"
+					{
+						"type"    "objectptr"
+					}
+					"SomeFloat"
+					{
+						"type"    "float"
+					}
+				}
+			}
+			"ZombieReplacement::Restore"
+			{
+				"signature"  "ZombieReplacement::Restore"
+				"callconv"  "thiscall"
+				"return"  "int"
+				"this"  "ignore"
+				"arguments"
+				{
+					"Replacement"
+					{
+						"type"    "cbaseentity"
+					}
+					"ClientToReplace"
+					{
+						"type"    "cbaseentity"
+					}
+				}
+			}
+			"SurvivorReplacement::Restore"
+			{
+				"signature"  "SurvivorReplacement::Restore"
+				"callconv"  "thiscall"
+				"return"  "int"
+				"this"  "ignore"
+				"arguments"
+				{
+					"Replacement"
+					{
+						"type"    "cbaseentity"
+					}
+					"ClientToReplace"
+					{
+						"type"    "cbaseentity"
+					}
+				}
+			}
+		}
+		"Signatures"
+		{
+			"WitchAttack::SetVictim"
+			{
+				"library"		"server"
+				"linux"			"@_ZN11WitchAttack9SetVictimEP11CBaseEntity"
+				"windows"		"\x55\x8B\xEC\x56\x8B\x75\x08\x57\x8B\xF9\x85\xF6\x74\x2A\x8B\x06\x8B\x50\x08\x8B\xCE\xFF\xD2\x8B\x00\x89\x47\x34\x8B\x16"
+								/* 55 8B EC 56 8B 75 08 57 8B F9 85 F6 74 ? 8B 06 8B 50 08 8B CE FF D2 8B 00 89 47 34 8B 16 */
+			}
+			"Behavior<Infected>::Update"
+			{
+				"library"		"server"
+				"linux"			"@_ZN8BehaviorI8InfectedE6UpdateEPS0_f"
+				"windows"		"\x55\x8B\xEC\x81\xEC\x20\x01\x00\x00\xA1\x2A\x2A\x2A\x2A\x33\xC5\x89\x45\xFC\xF3\x0F\x10\x45\x0C\x53\x56\x57\x8B\x7D\x08\x33\xDB\x8B\xF1\xF3\x0F\x11\x85\xEC\xFE\xFF\xFF\x3B\xFB\x0F\x84\x2A\x2A\x2A\x2A\x8B\x4E\x08\x3B\xCB\x0F\x84\x2A\x2A\x2A\x2A\xD9\x85\xEC\xFE\xFF\xFF\x51\xD9\x1C\x24\x56\x57\x8D\x85\xE0\xFE\xFF\xFF\x50\xE8\x2A\x2A\x2A\x2A\x8B\x10\x83\xEC\x0C\x8B\xCC\x89\x11\x8B\x50\x04\x8B\x40\x08\x89\x51\x04\x56\x89\x41\x08\x8B\x4E\x08\x57\xE8\x2A\x2A\x2A\x2A\x89\x46\x08\x3B\xC3\x74\x2A\x6A\x01\x8D\x8F\x60\x1A\x00\x00"
+								/* 55 8B EC 81 EC 20 01 00 00 A1 ? ? ? ? 33 C5 89 45 FC F3 0F 10 45 0C 53 56 57 8B 7D 08 33 DB 8B F1 F3 0F 11 85 EC FE FF FF 3B FB 0F 84 ? ? ? ? 8B 4E 08 3B CB 0F 84 ? ? ? ? D9 85 EC FE FF FF 51 D9 1C 24 56 57 8D 85 E0 FE FF FF 50 E8 ? ? ? ? 8B 10 83 EC 0C 8B CC 89 11 8B 50 04 8B 40 08 89 51 04 56 89 41 08 8B 4E 08 57 E8 ? ? ? ? 89 46 08 3B C3 74 ? 6A 01 8D 8F 60 1A 00 00 */
+			}
+			"WitchAttack::Update"
+			{
+				"library"		"server"
+				"linux"			"@_ZN11WitchAttack6UpdateEP8Infectedf"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x28\x53\x56\x57\x8B\x7D\x0C\x8B\x87\x60\x1A\x00\x00"
+								/* 55 8B EC 83 EC 28 53 56 57 8B 7D 0C 8B 87 60 1A 00 00 */
+			}
+			"ZombieReplacement::Restore"
+			{
+				"library"		"server"
+				"linux"			"@_ZN17ZombieReplacement7RestoreEP13CTerrorPlayerS1_"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x08\x53\x56\x8B\x75\x0C\x8B\x06\x8B\x90\xC4\x08\x00\x00"
+								/* 55 8B EC 83 EC 08 53 56 8B 75 0C 8B 06 8B 90 C4 08 00 00 */
+			}
+			"SurvivorReplacement::Restore"
+			{
+				"library"		"server"
+				"linux"			"@_ZN19SurvivorReplacement7RestoreEP13CTerrorPlayerS1_"
+				"windows"		"\x55\x8B\xEC\x83\xEC\x18\x53\x56\x8B\x75\x0C\x8B\x06"
+								/* 55 8B EC 83 EC 18 53 56 8B 75 0C 8B 06 */
+			}
+		}
+	}
+}
