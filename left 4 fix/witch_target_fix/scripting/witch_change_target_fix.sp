@@ -182,6 +182,10 @@ public MRESReturn OnWitchAttackUpdatePre(Address pThis, Handle hReturn, Handle h
 }
 
 
+//Thanks noscoop
+//https://github.com/nosoop/stocksoup/blob/f531c63d411dd8541bf15d88881ee9c6cce56804/memory.inc
+
+
 /**
  * Retrieves an entity index from a raw entity handle address.
  * 
