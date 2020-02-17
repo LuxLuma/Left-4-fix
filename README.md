@@ -50,5 +50,8 @@ Because l4d2's vscript system is the best!
 # l4d2_csweapons
 
 A non workaround method to allow csweapons to spawn for the director, does not obey "no_cs_weapons" mission keyvalue.
+ ##### Extra Requirements
+
+ - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 ##### Left 4 Fix is a repo of stuff valve should fix for left 4 dead1/2 but have not, why this exists.
