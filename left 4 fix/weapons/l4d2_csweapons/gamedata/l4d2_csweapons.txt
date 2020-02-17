@@ -1,0 +1,33 @@
+"Games"
+{
+	"left4dead2"
+	{
+		"Functions"
+		{
+			"CDirectorItemManager::IsWeaponAllowedToExist"
+			{
+				"signature"		"CDirectorItemManager::IsWeaponAllowedToExist"
+				"callconv"		"thiscall"
+				"return"		"bool"
+				"this"			"ignore"
+				"arguments"
+				{
+					"CSWeaponID"
+					{
+						"type"	"int"
+					}
+				}
+			}
+		}
+		"Signatures"
+		{
+			"CDirectorItemManager::IsWeaponAllowedToExist"
+			{
+				"library"		"server"
+				"linux"			"@_ZN20CDirectorItemManager22IsWeaponAllowedToExistE10CSWeaponID"
+				"windows"		"\x55\x8B\xEC\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A\x8B\x01\x8B\x90\xF4\x01\x00\x00\xFF\xD2\x84\xC0\x0F\x85\x2A\x2A\x2A\x2A"
+								/* 56 8B F1 E8 ? ? ? ? 85 C0 74 ? 6A 00  */
+			}
+		}
+	}
+}
