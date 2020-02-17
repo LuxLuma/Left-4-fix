@@ -47,5 +47,8 @@ Fixes hunter alignment and issue with shoving a pounced survivor hunter from not
 Creates a clean way to change maps, sm_map causes leaks and other spooky stuff causing server perf to be worse over time.
 Because l4d2's vscript system is the best!
 
+# l4d2_csweapons
+
+A non workaround method to allow csweapons to spawn for the director, does not obey "no_cs_weapons" mission keyvalue.
 
 ##### Left 4 Fix is a repo of stuff valve should fix for left 4 dead1/2 but have not, why this exists.
