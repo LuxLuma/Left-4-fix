@@ -25,20 +25,20 @@
 		{
 			"WitchAttack::GetVictim"
 			{
-				"linux"		"13"
-				"windows"	"6"
+				"linux"		"13"	//0x74 --> 0xEB
+				"windows"	"6"		//0x75 --> 0x90
 			}
 			"WitchAttack::OnStart"
 			{
-				"windows"	"72"
+				"windows"	"72"	//0x75 --> 0x90
 			}
 			"WitchAttack::OnAnimationEvent"
 			{
-				"windows"	"17"
+				"windows"	"17"	//0x75 --> 0x90
 			}
 			"WitchAttack::Update"
 			{
-				"windows"	"60"
+				"windows"	"60"	//0x75 --> 0x90
 			}
 		}
 		"Signatures"
