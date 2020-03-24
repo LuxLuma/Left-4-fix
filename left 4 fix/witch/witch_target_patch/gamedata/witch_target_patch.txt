@@ -71,4 +71,79 @@
 			}
 		}
 	}
+	"left4dead"
+	{
+		"Addresses"
+		{
+			"WitchAttack::GetVictim"
+			{
+				"signature"	"WitchAttack::GetVictim"
+			}
+			"WitchAttack::OnStart"
+			{
+				"signature"	"WitchAttack::OnStart"
+			}
+			"WitchAttack::OnAnimationEvent"
+			{
+				"signature"	"WitchAttack::OnAnimationEvent"
+			}
+			"WitchAttack::Update"
+			{
+				"signature"	"WitchAttack::Update"
+			}
+		}
+		"Offsets"
+		{
+			"WitchAttack::GetVictim"
+			{
+				"linux"		"26"	//0x74 --> 0xEB
+				"windows"	"6"		//0x75 --> 0x90
+			}
+			"WitchAttack::OnStart"
+			{
+				"windows"	""	//0x75 --> 0x90
+			}
+			"WitchAttack::OnAnimationEvent"
+			{
+				"windows"	""	//0x75 --> 0x90
+			}
+			"WitchAttack::Update"
+			{
+				"windows"	""	//0x75 --> 0x90
+			}
+			"WitchAttack::OnContact"
+			{
+				"linux"		"235"
+			}
+		}
+		"Signatures"
+		{
+			/* WitchAttack::OnContact Location in win& linux seems to not use it and is inlined*/
+			"WitchAttack::GetVictim"
+			{
+				"library"		"server"
+				"linux"			"@_ZNK11WitchAttack9GetVictimEv"
+				"windows"		""
+								/*  */
+			}
+			"WitchAttack::OnStart"
+			{
+				"library"		"server"
+				"windows"		""
+								/*  */
+			}
+			"WitchAttack::OnAnimationEvent"
+			{
+				"library"		"server"
+				"windows"		""
+								/*  */
+			}
+			"WitchAttack::Update"
+			{
+				"library"		"server"
+				"windows"		""
+								/*  */
+			}
+		}
+	}
 }
