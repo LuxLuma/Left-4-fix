@@ -27,10 +27,20 @@
 	"left4dead" 
 	{ 
 		"Functions" 
+		{ 
+			"WitchLocomotion::IsAreaTraversable" 
+			{ 
+				"signature"  "WitchLocomotion::IsAreaTraversable" 
 				"callconv"  "thiscall" 
+				"return"  "bool" 
+				"this"  "ignore" 
 				"arguments" 
+				{ 
+					"NavArea" 
 					{ 
+						"type"    "int" 
 					} 
+				} 
 			} 
 		}  
 		"Signatures" 
