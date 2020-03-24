@@ -27,7 +27,7 @@
 #pragma newdecls required
 
 #define GAMEDATA "witch_prevent_target_loss"
-#define PLUGIN_VERSION	"1.0"
+#define PLUGIN_VERSION	"1.1"
 
 
 Address OnMoveToFailure_1 = Address_Null;
@@ -38,9 +38,10 @@ int MoveFailureBytesStore_2[2];
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	if(GetEngineVersion() != Engine_Left4Dead2)
+	EngineVersion CurrentEngine = GetEngineVersion();
+	if(CurrentEngine != Engine_Left4Dead2 && CurrentEngine != Engine_Left4Dead)
 	{
-		strcopy(error, err_max, "Plugin only supports Left 4 Dead 2");
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1/2");
 		return APLRes_SilentFailure;
 	}
 	return APLRes_Success;
