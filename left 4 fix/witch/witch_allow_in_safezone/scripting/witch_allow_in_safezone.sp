@@ -27,22 +27,25 @@
 
 #define GAMEDATA "witch_allow_in_safezone"
 
-#define PLUGIN_VERSION	"1.0"
+#define PLUGIN_VERSION	"1.1"
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	if(GetEngineVersion() != Engine_Left4Dead2)
+	EngineVersion CurrentEngine = GetEngineVersion();
+	if(CurrentEngine != Engine_Left4Dead2 && CurrentEngine != Engine_Left4Dead)
 	{
-		strcopy(error, err_max, "Plugin only supports Left 4 Dead 2");
+		strcopy(error, err_max, "Plugin only supports Left 4 Dead 1/2");
 		return APLRes_SilentFailure;
 	}
 	return APLRes_Success;
 }
 
+// Harry Potter
+// https://github.com/fbef0102
 public Plugin myinfo =
 {
 	name = "[L4D2]Witch_allow_in_safezone",
-	author = "Lux",
+	author = "Lux & Harry Potter",
 	description = "Allows witches to chase victims into safezones",
 	version = PLUGIN_VERSION,
 	url = "-"
@@ -55,12 +58,25 @@ public void OnPluginStart()
 		SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA);
 	
 	Handle hDetour;
-	hDetour = DHookCreateFromConf(hGamedata, "CDirector::AllowWitchesInCheckpoints");
-	if(!hDetour)
-		SetFailState("Failed to find \"CDirector::AllowWitchesInCheckpoints\" signature.");
-		
-	if(!DHookEnableDetour(hDetour, true, AllowWitchesInCheckpoints))
-		SetFailState("Failed to detour \"CDirector::AllowWitchesInCheckpoints\".");
+	
+	if(GetEngineVersion() == Engine_Left4Dead2)
+	{
+		hDetour = DHookCreateFromConf(hGamedata, "CDirector::AllowWitchesInCheckpoints");
+		if(!hDetour)
+			SetFailState("Failed to find \"CDirector::AllowWitchesInCheckpoints\" signature.");
+			
+		if(!DHookEnableDetour(hDetour, true, AllowWitchesInCheckpoints))
+			SetFailState("Failed to detour \"CDirector::AllowWitchesInCheckpoints\".");
+	}
+	else
+	{
+		hDetour = DHookCreateFromConf(hGamedata, "WitchLocomotion::IsAreaTraversable");
+		if(!hDetour)
+			SetFailState("Failed to find \"WitchLocomotion::IsAreaTraversable\" signature.");
+			
+		if(!DHookEnableDetour(hDetour, true, AllowWitchesInCheckpoints))
+			SetFailState("Failed to detour \"WitchLocomotion::IsAreaTraversable\".");
+	}
 	
 	delete hGamedata;
 }
