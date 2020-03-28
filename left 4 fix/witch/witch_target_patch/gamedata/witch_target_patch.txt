@@ -168,7 +168,7 @@
 			"WitchAttack::OnContact"
 			{
 				"library"		"server"
-				"Linux"			"@_ZN11WitchAttack9OnContactEP8InfectedP11CBaseEntityP10CGameTrace"
+				"linux"			"@_ZN11WitchAttack9OnContactEP8InfectedP11CBaseEntityP10CGameTrace"
 			}
 		}
 	}
