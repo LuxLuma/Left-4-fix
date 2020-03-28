@@ -27,7 +27,7 @@
 #pragma newdecls required
 
 #define GAMEDATA "witch_prevent_target_loss"
-#define PLUGIN_VERSION	"1.1"
+#define PLUGIN_VERSION	"1.1.1"
 
 
 Address OnMoveToFailure_1 = Address_Null;
@@ -139,20 +139,14 @@ public void OnPluginEnd()
 {
 	if(OnMoveToFailure_1 != Address_Null)
 	{
-		if(LoadFromAddress(OnMoveToFailure_1, NumberType_Int8) == 0x90)
-		{
-			StoreToAddress(OnMoveToFailure_1, MoveFailureBytesStore_1[0], NumberType_Int8);
-			StoreToAddress(OnMoveToFailure_1 + view_as<Address>(1), MoveFailureBytesStore_1[1], NumberType_Int8);
-			PrintToServer("WitchPatch restored 'WitchAttack::OnMoveToFailure_1'");
-		}
+		StoreToAddress(OnMoveToFailure_1, MoveFailureBytesStore_1[0], NumberType_Int8);
+		StoreToAddress(OnMoveToFailure_1 + view_as<Address>(1), MoveFailureBytesStore_1[1], NumberType_Int8);
+		PrintToServer("WitchPatch restored 'WitchAttack::OnMoveToFailure_1'");
 	}
 	if(OnMoveToFailure_2 != Address_Null)
 	{
-		if(LoadFromAddress(OnMoveToFailure_2, NumberType_Int8) == 0x90)
-		{
-			StoreToAddress(OnMoveToFailure_2, MoveFailureBytesStore_2[0], NumberType_Int8);
-			StoreToAddress(OnMoveToFailure_2 + view_as<Address>(1), MoveFailureBytesStore_2[1], NumberType_Int8);
-			PrintToServer("WitchPatch restored 'WitchAttack::OnMoveToFailure_2'");
-		}
+		StoreToAddress(OnMoveToFailure_2, MoveFailureBytesStore_2[0], NumberType_Int8);
+		StoreToAddress(OnMoveToFailure_2 + view_as<Address>(1), MoveFailureBytesStore_2[1], NumberType_Int8);
+		PrintToServer("WitchPatch restored 'WitchAttack::OnMoveToFailure_2'");
 	}
 }
