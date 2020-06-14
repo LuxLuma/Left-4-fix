@@ -49,7 +49,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public Plugin myinfo =
 {
-	name = "[L4D2]witch_prevent_target_loss",
+	name = "[L4D1/2]witch_prevent_target_loss",
 	author = "Lux",
 	description = "Prevents the witch from randomly loosing target.",
 	version = PLUGIN_VERSION,

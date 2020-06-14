@@ -58,7 +58,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public Plugin myinfo =
 {
-	name = "[L4D2]Witch_Target_Patch",
+	name = "[L4D1/2]Witch_Target_Patch",
 	author = "Lux",
 	description = "Fixes witch targeting wrong person",
 	version = PLUGIN_VERSION,

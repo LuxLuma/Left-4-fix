@@ -44,7 +44,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 // https://github.com/fbef0102
 public Plugin myinfo =
 {
-	name = "[L4D2]Witch_allow_in_safezone",
+	name = "[L4D1/2]Witch_allow_in_safezone",
 	author = "Lux & Harry Potter",
 	description = "Allows witches to chase victims into safezones",
 	version = PLUGIN_VERSION,
