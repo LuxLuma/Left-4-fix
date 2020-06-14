@@ -53,5 +53,12 @@ A non workaround method to allow csweapons to spawn for the director, does not o
  ##### Extra Requirements
 
  - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
+ 
+ # [physics_object_pushfix](https://forums.alliedmods.net/showthread.php?p=2705656#post2705656)
+
+alternative to https://forums.alliedmods.net/showthread.php?p=1706053 that does not modify collision rules.
+ ##### Extra Requirements
+
+ - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 ##### Left 4 Fix is a repo of stuff valve should fix for left 4 dead1/2 but have not, why this exists.
