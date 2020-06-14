@@ -17,7 +17,7 @@
 */
 
 // alternative to https://forums.alliedmods.net/showthread.php?p=1706053
-// credit silvershot for uisng some code.
+// credit silvershot for using some code.
 
 #pragma semicolon 1
 
@@ -84,9 +84,11 @@ public void OnPluginStart()
 
 public void OnMapStart()
 {
+	int iModelIndex;
 	for(int i = 0; i < PROPMODELS_MAX; i++)
 	{
-		g_iPropModelIndex[i] = PrecacheModel(g_sPropModels[i], true);
+		iModelIndex = PrecacheModel(g_sPropModels[i], true);
+		g_iPropModelIndex[i] = (iModelIndex != 0 ? iModelIndex : -1);// failsafe
 	}
 }
 
