@@ -29,7 +29,7 @@
 #define GAMEDATA "witch_change_target_fix"
 #define PLUGIN_VERSION	"0.2"
 
-#define WITCH_TARGET_OFFSET view_as<Address>(54)
+#define WITCH_TARGET_OFFSET view_as<Address>(52)
 
 int g_iWitchTarget[2048+1];
 Address g_WitchAttackAddress[2048+1];
@@ -104,7 +104,6 @@ public void OnPluginStart()
 		SetFailState("Failed to detour 'SurvivorReplacement::Restore'");
 	}
 	
-	/*
 	hDetour = DHookCreateFromConf(hGamedata, "WitchAttack::Update");
 	if(!hDetour)
 	{
@@ -113,7 +112,7 @@ public void OnPluginStart()
 	else if(!DHookEnableDetour(hDetour, false, OnWitchAttackUpdatePre))
 	{
 		LogError("Failed to detour 'WitchAttack::Update'");
-	}*/
+	}
 	delete hGamedata;
 	
 	RegAdminCmd("witchchangetarget", targetchange, ADMFLAG_ROOT);
@@ -124,7 +123,7 @@ public Action targetchange(int iClient, int iArgs)// test cmd very unsafe, sets 
 	char sArg[64];
 	GetCmdArg(1, sArg, sizeof(sArg));
 	
-	for(int i = MaxClients; i <= 2048; i++)
+	for(int i; i <= 2048; i++)
 	{
 		if(g_WitchAttackAddress[i] != Address_Null)
 			StoreEntityHandleToAddress(g_WitchAttackAddress[i] + WITCH_TARGET_OFFSET, StringToInt(sArg));
@@ -145,8 +144,6 @@ public MRESReturn OnBehaviorUpdatePre(Address pThis, Handle hParams)
 	g_iCurrentWitchUpdating = DHookGetParam(hParams, 1);
 	if(g_iCurrentWitchUpdating < MaxClients+1 || g_iCurrentWitchUpdating > 2048)
 		g_iCurrentWitchUpdating = -1;
-	
-	
 	return MRES_Ignored;
 }
 
@@ -157,7 +154,7 @@ public MRESReturn OnClientReplaced(Handle hReturn, Handle hParams)
 	int iClientToReplace = DHookGetParam(hParams, 1);
 	int iReplacement = DHookGetParam(hParams, 2);
 	
-	for(int i = MaxClients+1; i < sizeof(g_iWitchTarget); i++)
+	for(int i = MaxClients+1; i <= 2048; i++)
 	{
 		if(g_iWitchTarget[i] == iClientToReplace)
 			g_iWitchTarget[i] = iReplacement;
@@ -170,14 +167,11 @@ public MRESReturn OnClientReplaced(Handle hReturn, Handle hParams)
 public MRESReturn OnWitchAttackUpdatePre(Address pThis, Handle hReturn, Handle hParams)
 {
 	int iWitchTarget = LoadEntityHandleFromAddress(pThis + WITCH_TARGET_OFFSET);
-	if(iWitchTarget < 1)
-	{
-		g_iWitchTarget[g_iCurrentWitchUpdating] = -1;
-		return MRES_Ignored;
-	}
-	
 	if(g_iWitchTarget[g_iCurrentWitchUpdating] != iWitchTarget)
+	{
 		StoreEntityHandleToAddress(pThis + WITCH_TARGET_OFFSET, g_iWitchTarget[g_iCurrentWitchUpdating]);
+		PrintToChatAll("Witch[%i] [%i]->%N[%i]", g_iCurrentWitchUpdating, iWitchTarget, g_iWitchTarget[g_iCurrentWitchUpdating], g_iWitchTarget[g_iCurrentWitchUpdating]);
+	}
 	return MRES_Ignored;
 }
 

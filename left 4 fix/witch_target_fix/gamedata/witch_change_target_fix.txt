@@ -40,10 +40,30 @@
 			{
 				"signature"  "WitchAttack::Update"
 				"callconv"  "thiscall"
-				"return"  "charptr"
+				"windows"
+				{
+					"return"  "int"
+				}
+				"linux"
+				{
+					"return"  "charptr"
+				}
 				"this"  "address"
 				"arguments"
 				{
+					"ret"
+					{
+						"windows"
+						{
+							"type"  "objectptr"
+						}
+						"linux"
+						{
+							"type"  "object"
+							"size"  "3"
+							"register"  "eax"
+						}
+					}
 					"Infected"
 					{
 						"type"    "objectptr"
