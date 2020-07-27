@@ -4,14 +4,6 @@
 	{
 		"Signatures"
 		{
-			"CTerrorPlayer::UpdatePounce"
-			{
-				"library"		"server"
-				"linux"			"@_ZN13CTerrorPlayer12UpdatePounceEv"
-				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x01\x00\x00\xA1\x2A\x2A\x2A\x2A\x33\xC5\x89\x45\xFC\x53\x56\x57\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x50"
-								/* ? ? ? ? ? ? 01 00 00 A1 ? ? ? ? 33 C5 89 45 FC 53 56 57 8B F1 E8 ? ? ? ? 50 */
-				
-			}
 			"CBaseEntity::SetAbsOrigin"
 			{
 				"library"		"server"
