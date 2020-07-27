@@ -30,8 +30,21 @@
 #define GAMEDATA "hunter_pounce_alignment_fix"
 #define PLUGIN_VERSION	"2.0"
 
+#define MAX_PATCH_SIZE 16 //highest amount of patch bytes needed
+#define LINUX_PATCH_SIZE 16
+#define WINDOWS_PATCH_SIZE 12
+
+Address SetAbsOrigin_address;
+int SetAbsOrigin_bytes[MAX_PATCH_SIZE];
+
 Handle g_hSetAbsOrigin;
 Handle g_hSetAbsVelocity;
+
+enum OS_Type
+{
+	OS_windows = 0,
+	OS_linux
+}
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -78,8 +91,58 @@ public void OnPluginStart()
 	if(g_hSetAbsVelocity == null)
 		SetFailState("Unable to prep SDKCall 'CBaseEntity::SetAbsVelocity'");
 	
+	//nop it :)
+	UpdatePounce_Patch(hGamedata);
 	delete hGamedata;
 }
+
+void UpdatePounce_Patch(Handle &hGamedata)
+{
+	OS_Type os = view_as<OS_Type>(GameConfGetOffset(hGamedata, "OS"));
+	SetAbsOrigin_address = GameConfGetAddress(hGamedata, "CTerrorPlayer::UpdatePounce::SetAbsVelocity");
+	if(SetAbsOrigin_address == Address_Null)
+	{
+		LogError("Failed to find address 'CTerrorPlayer::UpdatePounce::SetAbsVelocity'");
+		return;
+	}
+	
+	for(int i = 0; i < MAX_PATCH_SIZE; i++)
+	{
+		SetAbsOrigin_bytes[i] = LoadFromAddress(SetAbsOrigin_address + view_as<Address>(i), NumberType_Int8);
+	}
+	
+	switch(os)
+	{
+		case OS_windows:
+		{
+			for(int i = 0; i < WINDOWS_PATCH_SIZE; i++)
+			{
+				StoreToAddress(SetAbsOrigin_address + view_as<Address>(i), 0x90, NumberType_Int8);
+			}
+		}
+		case OS_linux:
+		{
+			for(int i = 0; i < LINUX_PATCH_SIZE; i++)
+			{
+				StoreToAddress(SetAbsOrigin_address + view_as<Address>(i), 0x90, NumberType_Int8);
+			}
+		}
+	}
+	PrintToServer("Patched 'CTerrorPlayer::UpdatePounce->CBaseEntity::SetAbsVelocity'");
+}
+
+public void OnPluginEnd()
+{
+	if(SetAbsOrigin_address != Address_Null)
+	{
+		for(int i = 0; i < MAX_PATCH_SIZE; i++)
+		{
+			StoreToAddress(SetAbsOrigin_address + view_as<Address>(i), SetAbsOrigin_bytes[i], NumberType_Int8);
+		}
+		PrintToServer("Restored 'CTerrorPlayer::UpdatePounce->CBaseEntity::SetAbsVelocity'");
+	}
+}
+
 
 public void OnEntityCreated(int iEntity, const char[] sClassname)
 {
@@ -104,6 +167,7 @@ public void PostThinkHunter(int iHunter)
 		return;
 	
 	//copy all the victims origin and velocity data so velocity interpolation can happen clientside
+	//and lagcomp is as correct as it can be
 	static float vecPos[3];
 	static float vecVel[3];
 	GetEntPropVector(iPounceVictim, Prop_Data, "m_vecAbsOrigin", vecPos);//worldspace origin
