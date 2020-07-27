@@ -39,8 +39,6 @@ Fixes witch going after wrong clone survivor
 
 # Hunter_pounce_alignment_fix
 Fixes hunter alignment and issue with shoving a pounced survivor hunter from not being shoved off very early in pounce.
-#### Extra Requirements
--   [Source Scramble (memory patching and allocation natives)](https://forums.alliedmods.net/showpost.php?s=afcc4e2813b2d4593c91fe25b8dbc3e8&p=2657347&postcount=1)
 
 # [l4d2_changelevel](https://forums.alliedmods.net/showthread.php?p=2669850)
 
