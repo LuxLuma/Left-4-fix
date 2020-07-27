@@ -25,18 +25,13 @@
 #include <sdktools>
 #include <sdkhooks>
 
-#define REQUIRE_EXTENSIONS
-#include <sourcescramble>
-
 #pragma newdecls required
 
 #define GAMEDATA "hunter_pounce_alignment_fix"
-#define PLUGIN_VERSION	"1.1.0"
+#define PLUGIN_VERSION	"2.0"
 
-#define DEBUG false
-
-MemoryPatch g_PatchMoveScale;
-MemoryBlock g_PatchMoveScaleRedirect;
+Handle g_hSetAbsOrigin;
+Handle g_hSetAbsVelocity;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -52,12 +47,11 @@ public Plugin myinfo =
 {
 	name = "[L4D2]hunter_pounce_alignment_fix",
 	author = "Lux",
-	description = "Fixes hunter alignment and issue with shoving a pounced survivor hunter from not being shoved off very early in pounce.",
+	description = "Restores l4d1 style hunter alignment.",
 	version = PLUGIN_VERSION,
-	url = "-"
+	url = "https://github.com/LuxLuma/Left-4-fix/tree/master/left%204%20fix/hunter/Hunter_pounce_alignment_fix"
 };
 
-// followed this example https://github.com/nosoop/SM-TFCustomAttributeStarterPack/blob/master/scripting/cloak_debuff_time_scale.sp thanks noscoop
 public void OnPluginStart()
 {
 	CreateConVar("hunter_pounce_alignment_fix_version", PLUGIN_VERSION, "", FCVAR_NOTIFY|FCVAR_DONTRECORD);
@@ -66,32 +60,56 @@ public void OnPluginStart()
 	if(hGamedata == null) 
 		SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA);
 	
-	g_PatchMoveScale = MemoryPatch.CreateFromConf(hGamedata, "CTerrorPlayer::UpdatePounce");
+	StartPrepSDKCall(SDKCall_Entity);
+	if(!PrepSDKCall_SetFromConf(hGamedata, SDKConf_Signature, "CBaseEntity::SetAbsOrigin"))
+		SetFailState("Error finding the 'CBaseEntity::SetAbsOrigin' signature.");
 	
-	if(!g_PatchMoveScale.Validate())
-		SetFailState("Unable to load offset signatures differ 'CTerrorPlayer::UpdatePounce'.", GAMEDATA);
-		
-	Address ppFloat = g_PatchMoveScale.Address + view_as<Address>(0x04);
+	PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_Pointer);
+	g_hSetAbsOrigin = EndPrepSDKCall();
+	if(g_hSetAbsOrigin == null)
+		SetFailState("Unable to prep SDKCall 'CBaseEntity::SetAbsOrigin'");
 	
-	#if DEBUG
-	Address pOrignalLocation = DereferencePointer(ppFloat);
-	#endif
+	StartPrepSDKCall(SDKCall_Entity);
+	if(!PrepSDKCall_SetFromConf(hGamedata, SDKConf_Signature, "CBaseEntity::SetAbsVelocity"))
+		SetFailState("Error finding the 'CBaseEntity::SetAbsVelocity' signature.");
 	
-	float flNewMoveScale = 0.0;
-	g_PatchMoveScaleRedirect = new MemoryBlock(4);
-	g_PatchMoveScaleRedirect.StoreToOffset(0, view_as<int>(flNewMoveScale), NumberType_Int32);
+	PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_Pointer);
+	g_hSetAbsVelocity = EndPrepSDKCall();
+	if(g_hSetAbsVelocity == null)
+		SetFailState("Unable to prep SDKCall 'CBaseEntity::SetAbsVelocity'");
 	
-	StoreToAddress(ppFloat, view_as<int>(g_PatchMoveScaleRedirect.Address), NumberType_Int32);
-	
-	#if DEBUG
-	PrintToServer("pOrignalLocation = %f new value = %f", view_as<float>(DereferencePointer(pOrignalLocation)), view_as<float>(
-			DereferencePointer(DereferencePointer(ppFloat))));
-	#endif
+	delete hGamedata;
 }
 
-//Thanks noscoop
-//https://github.com/nosoop/stocksoup/blob/f531c63d411dd8541bf15d88881ee9c6cce56804/memory.inc#L39-L49
-stock Address DereferencePointer(Address addr) {
-	// maybe someday we'll do 64-bit addresses
-	return view_as<Address>(LoadFromAddress(addr, NumberType_Int32));
+public void OnEntityCreated(int iEntity, const char[] sClassname)
+{
+	if(sClassname[0] == 'h' && StrEqual(sClassname, "hunter", false))
+		SDKHook(iEntity, SDKHook_PostThink, PostThinkHunter);
+}
+
+public void OnClientPutInServer(int iClient)
+{
+	if(!IsFakeClient(iClient))
+		SDKHook(iClient, SDKHook_PostThink, PostThinkHunter);
+}
+
+public void PostThinkHunter(int iHunter)
+{
+	if(!IsPlayerAlive(iHunter) || GetClientTeam(iHunter) != 3)
+		return;
+	
+	int iPounceVictim = GetEntPropEnt(iHunter, Prop_Send, "m_pounceVictim");
+	if(iPounceVictim < 1 || !IsPlayerAlive(iPounceVictim) || 
+		GetEntPropEnt(iPounceVictim, Prop_Send, "m_pounceAttacker") != iHunter)// just incase
+		return;
+	
+	//copy all the victims origin and velocity data so velocity interpolation can happen clientside
+	static float vecPos[3];
+	static float vecVel[3];
+	GetEntPropVector(iPounceVictim, Prop_Data, "m_vecAbsOrigin", vecPos);//worldspace origin
+	GetEntPropVector(iPounceVictim, Prop_Data, "m_vecAbsVelocity", vecVel);
+	
+	//TeleportEntity seems to make the hunter's outline flash to avoid this don't use it :P
+	SDKCall(g_hSetAbsOrigin, iHunter, vecPos);
+	SDKCall(g_hSetAbsVelocity, iHunter, vecVel);
 }

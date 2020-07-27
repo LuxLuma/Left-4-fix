@@ -2,36 +2,29 @@
 {
 	"left4dead2"
 	{
-		"MemPatches"
-		{
-			"CTerrorPlayer::UpdatePounce"
-			{
-				"signature"			"CTerrorPlayer::UpdatePounce"
-				"linux"
-				{
-					"offset"		"136h"
-					
-					//  movss   xmm3, ds:dword_*******
-					"verify"		"\xF3\x0F\x10\x1D\x2A\x2A\x2A\x2A"
-				}
-				"windows"
-				{
-					"offset"		"5CAh"
-					
-					// movss   xmm3, ds:dword_*******
-					"verify"		"\xF3\x0F\x10\x1D\x2A\x2A\x2A\x2A"
-				}
-			}
-		}
 		"Signatures"
 		{
 			"CTerrorPlayer::UpdatePounce"
 			{
 				"library"		"server"
 				"linux"			"@_ZN13CTerrorPlayer12UpdatePounceEv"
-				"windows"		"\x55\x8B\xEC\x81\xEC\x9C\x01\x00\x00\xA1\x2A\x2A\x2A\x2A\x33\xC5\x89\x45\xFC\x53"
-								/* 55 8B EC 81 EC 9C 01 00 00 A1 ? ? ? ? 33 C5 89 45 FC 53 */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x01\x00\x00\xA1\x2A\x2A\x2A\x2A\x33\xC5\x89\x45\xFC\x53\x56\x57\x8B\xF1\xE8\x2A\x2A\x2A\x2A\x50"
+								/* ? ? ? ? ? ? 01 00 00 A1 ? ? ? ? 33 C5 89 45 FC 53 56 57 8B F1 E8 ? ? ? ? 50 */
 				
+			}
+			"CBaseEntity::SetAbsOrigin"
+			{
+				"library"		"server"
+				"linux"			"@_ZN11CBaseEntity12SetAbsOriginERK6Vector"
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\xA1\x2A\x2A\x2A\x2A\x33\xC5\x89\x45\xFC\x56\x57\x8B\x7D\x08\x8B\xF1\xE8\x2A\x2A\x2A\x2A\xF3\x0F\x10\x07\x0F\x2E\x86\xCC\x02\x00\x00"
+								/* ? ? ? ? ? ? A1 ? ? ? ? 33 C5 89 45 FC 56 57 8B 7D 08 8B F1 E8 ? ? ? ? F3 0F 10 07 0F 2E 86 CC 02 00 00 */
+			}
+			"CBaseEntity::SetAbsVelocity"
+			{
+				"library"		"server"
+				"linux"			"@_ZN11CBaseEntity14SetAbsVelocityERK6Vector"
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x56\x8B\x75\x08\xF3\x0F\x10\x06\x57\x8B\xF9"
+								/* ? ? ? ? ? ? 56 8B 75 08 F3 0F 10 06 57 8B F9 */
 			}
 		}
 	}
