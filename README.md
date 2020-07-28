@@ -37,7 +37,7 @@ Prevents the witch from randomly loosing target.
 
 Fixes witch going after wrong clone survivor
 
-# Hunter_pounce_alignment_fix
+# [Hunter_pounce_alignment_fix](https://forums.alliedmods.net/showthread.php?p=2711955#)
 Fixes hunter alignment and issue with shoving a pounced survivor hunter from not being shoved off very early in pounce.
 
 # [l4d2_changelevel](https://forums.alliedmods.net/showthread.php?p=2669850)
