@@ -58,7 +58,7 @@ public Plugin myinfo =
 	author = "Lux",
 	description = "Fixes survivor going AFK game function.",
 	version = PLUGIN_VERSION,
-	url = "-"
+	url = "https://github.com/LuxLuma/Left-4-fix/tree/master/left%204%20fix/survivors/survivor_afk_fix"
 };
 
 public void OnPluginStart()
@@ -153,6 +153,9 @@ public MRESReturn OnSetHumanSpectatorPre(int pThis, Handle hParams)
 	if(!g_bShouldFixAFK)
 		return MRES_Ignored;
 	
+	if(g_iSurvivorBot < 1)
+		return MRES_Ignored;
+	
 	return MRES_Supercede;
 }
 
@@ -161,13 +164,16 @@ public MRESReturn OnSetObserverTargetPre(int pThis, Handle hReturn, Handle hPara
 	if(!g_bShouldFixAFK)
 		return MRES_Ignored;
 	
+	if(g_iSurvivorBot < 1)
+		return MRES_Ignored;
+	
 	DHookSetParam(hParams, 1, g_iSurvivorBot);
 	return MRES_ChangedHandled;
 }
 
 public MRESReturn OnGoAFKPost(int pThis, Handle hReturn)
 {
-	if(g_bShouldFixAFK)
+	if(g_bShouldFixAFK && g_iSurvivorBot > 1)
 	{
 		g_bShouldIgnore = true;
 		SDKCall(hSetHumanSpecSDKCall, g_iSurvivorBot, pThis);
