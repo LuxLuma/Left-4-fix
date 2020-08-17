@@ -29,14 +29,14 @@
 #define DEBUG 0
 
 #define GAMEDATA "survivor_afk_fix"
-#define PLUGIN_VERSION	"1.0"
+#define PLUGIN_VERSION	"1.0.1a"
 
 #if DEBUG
 Handle hAFKSDKCall;
 #endif
 
 Handle hSetHumanSpecSDKCall;
-Handle hSetObserverTarget;
+Handle hSetObserverTargetSDKCall;
 
 bool g_bShouldFixAFK = false;
 int g_iSurvivorBot;
@@ -69,9 +69,9 @@ public void OnPluginStart()
 	if(hGamedata == null) 
 		SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA);
 	
-	hSetObserverTarget = DHookCreateFromConf(hGamedata, "CTerrorPlayer::SetObserverTarget");
+	/*hSetObserverTarget = DHookCreateFromConf(hGamedata, "CTerrorPlayer::SetObserverTarget");
 	if(hSetObserverTarget == null)
-		SetFailState("Failed to make hook for 'CTerrorPlayer::SetObserverTarget'");
+		SetFailState("Failed to make hook for 'CTerrorPlayer::SetObserverTarget'");*/
 	
 	Handle hDetour;
 	hDetour = DHookCreateFromConf(hGamedata, "CTerrorPlayer::GoAwayFromKeyboard");
@@ -98,6 +98,16 @@ public void OnPluginStart()
 	hSetHumanSpecSDKCall = EndPrepSDKCall();
 	if(hSetHumanSpecSDKCall == null)
 		SetFailState("Unable to prep SDKCall 'SurvivorBot::SetHumanSpectator'");
+		
+	StartPrepSDKCall(SDKCall_Player);
+	if(!PrepSDKCall_SetFromConf(hGamedata, SDKConf_Virtual, "CTerrorPlayer::SetObserverTarget"))
+		SetFailState("Error finding the 'CTerrorPlayer::SetObserverTargetv' offset.");
+		
+	PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer);
+	hSetObserverTargetSDKCall = EndPrepSDKCall();
+	if(hSetObserverTargetSDKCall == null)
+		SetFailState("Unable to prep SDKCall 'CTerrorPlayer::SetObserverTarget'");
+	
 	
 	#if DEBUG
 	StartPrepSDKCall(SDKCall_Player);
@@ -127,14 +137,10 @@ public Action AFKTEST(int client, int args)
 
 public void OnClientPutInServer(int client)
 {
-	if(!IsFakeClient(client))
+	/*if(!IsFakeClient(client))
 	{
 		DHookEntity(hSetObserverTarget, false, client, _, OnSetObserverTargetPre);
-	}
-	else if(g_bShouldFixAFK)
-	{
-		g_iSurvivorBot = client;
-	}
+	}*/
 }
 
 public MRESReturn OnGoAFKPre(int pThis, Handle hReturn)
@@ -144,6 +150,19 @@ public MRESReturn OnGoAFKPre(int pThis, Handle hReturn)
 	
 	g_bShouldFixAFK = true;
 }
+
+//Only thing we need is the bot single threaded logic means we use the call order
+public void OnEntityCreated(int entity, const char[] classname)
+{
+	if(!g_bShouldFixAFK)
+		return;
+	
+	if(classname[0] != 's' || !StrEqual(classname, "survivor_bot", false))
+		return;
+	
+	g_iSurvivorBot = entity;
+}
+
 
 public MRESReturn OnSetHumanSpectatorPre(int pThis, Handle hParams)
 {
@@ -159,6 +178,7 @@ public MRESReturn OnSetHumanSpectatorPre(int pThis, Handle hParams)
 	return MRES_Supercede;
 }
 
+/*
 public MRESReturn OnSetObserverTargetPre(int pThis, Handle hReturn, Handle hParams)
 {
 	if(!g_bShouldFixAFK)
@@ -170,13 +190,16 @@ public MRESReturn OnSetObserverTargetPre(int pThis, Handle hReturn, Handle hPara
 	DHookSetParam(hParams, 1, g_iSurvivorBot);
 	return MRES_ChangedHandled;
 }
+*/
 
+//pThis should only be CTerrorPlayer class and real players only not going to check for it
 public MRESReturn OnGoAFKPost(int pThis, Handle hReturn)
 {
-	if(g_bShouldFixAFK && g_iSurvivorBot > 1)
+	if(g_bShouldFixAFK && g_iSurvivorBot > 0 && IsFakeClient(g_iSurvivorBot))
 	{
 		g_bShouldIgnore = true;
 		SDKCall(hSetHumanSpecSDKCall, g_iSurvivorBot, pThis);
+		SDKCall(hSetObserverTargetSDKCall, pThis, g_iSurvivorBot);
 		g_bShouldIgnore = false;
 	}
 	
