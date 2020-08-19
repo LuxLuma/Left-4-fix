@@ -29,7 +29,7 @@
 #define DEBUG 0
 
 #define GAMEDATA "survivor_afk_fix"
-#define PLUGIN_VERSION	"1.0.1a"
+#define PLUGIN_VERSION	"1.0.4"
 
 #if DEBUG
 Handle hAFKSDKCall;
@@ -68,10 +68,6 @@ public void OnPluginStart()
 	Handle hGamedata = LoadGameConfigFile(GAMEDATA);
 	if(hGamedata == null) 
 		SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA);
-	
-	/*hSetObserverTarget = DHookCreateFromConf(hGamedata, "CTerrorPlayer::SetObserverTarget");
-	if(hSetObserverTarget == null)
-		SetFailState("Failed to make hook for 'CTerrorPlayer::SetObserverTarget'");*/
 	
 	Handle hDetour;
 	hDetour = DHookCreateFromConf(hGamedata, "CTerrorPlayer::GoAwayFromKeyboard");
@@ -135,14 +131,6 @@ public Action AFKTEST(int client, int args)
 }
 #endif
 
-public void OnClientPutInServer(int client)
-{
-	/*if(!IsFakeClient(client))
-	{
-		DHookEntity(hSetObserverTarget, false, client, _, OnSetObserverTargetPre);
-	}*/
-}
-
 public MRESReturn OnGoAFKPre(int pThis, Handle hReturn)
 {
 	if(g_bShouldFixAFK)
@@ -178,32 +166,38 @@ public MRESReturn OnSetHumanSpectatorPre(int pThis, Handle hParams)
 	return MRES_Supercede;
 }
 
-/*
-public MRESReturn OnSetObserverTargetPre(int pThis, Handle hReturn, Handle hParams)
-{
-	if(!g_bShouldFixAFK)
-		return MRES_Ignored;
-	
-	if(g_iSurvivorBot < 1)
-		return MRES_Ignored;
-	
-	DHookSetParam(hParams, 1, g_iSurvivorBot);
-	return MRES_ChangedHandled;
-}
-*/
-
 //pThis should only be CTerrorPlayer class and real players only not going to check for it
 public MRESReturn OnGoAFKPost(int pThis, Handle hReturn)
 {
 	if(g_bShouldFixAFK && g_iSurvivorBot > 0 && IsFakeClient(g_iSurvivorBot))
 	{
 		g_bShouldIgnore = true;
+		
 		SDKCall(hSetHumanSpecSDKCall, g_iSurvivorBot, pThis);
 		SDKCall(hSetObserverTargetSDKCall, pThis, g_iSurvivorBot);
+		
+		WriteTakeoverPanel(pThis, g_iSurvivorBot);
+		
 		g_bShouldIgnore = false;
 	}
 	
 	g_iSurvivorBot = 0;
 	g_bShouldFixAFK = false;
 	return MRES_Ignored;
+}
+
+//Thanks Leonardo for helping me with the vgui keyvalue layout
+//This is for rare case sometimes the takeover panel don't show.
+void WriteTakeoverPanel(int client, int bot)
+{
+	char buf[2];
+	int character = GetEntProp(bot, Prop_Send, "m_survivorCharacter", 1);
+	IntToString(character, buf, sizeof(buf));
+	BfWrite msg = view_as<BfWrite>(StartMessageOne("VGUIMenu", client));
+	msg.WriteString("takeover_survivor_bar"); //type
+	msg.WriteByte(true); //hide or show panel type
+	msg.WriteByte(1); //amount of keys
+	msg.WriteString("character"); //key name
+	msg.WriteString(buf); //key value
+	EndMessage();
 }

@@ -25,20 +25,6 @@
 					}
 				}
 			}
-			"CTerrorPlayer::SetObserverTarget"
-			{
-				"offset"		"CTerrorPlayer::SetObserverTarget"
-				"hooktype"		"entity"
-				"return"		"bool"
-				"this"			"entity"
-				"arguments"
-				{
-					"ObserverTarget"
-					{
-						type	"cbaseentity"
-					}
-				}
-			}
 		}
 	}
 	"left4dead2"
