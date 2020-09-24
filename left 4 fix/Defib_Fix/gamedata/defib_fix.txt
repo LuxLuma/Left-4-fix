@@ -74,13 +74,13 @@
 		{
 			"CItemDefibrillator::OnActionComplete"
 			{
-				"linux"		"455"
-				"windows"	"453"
+				"linux"		"456"
+				"windows"	"454"
 			}
 			"CItemDefibrillator::OnStartAction"
 			{
-				"linux"		"450"
-				"windows"	"448"
+				"linux"		"451"
+				"windows"	"449"
 			}
 		}
 		"Signatures"
