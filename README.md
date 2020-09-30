@@ -45,13 +45,6 @@ Fixes hunter alignment and issue with shoving a pounced survivor hunter from not
 Creates a clean way to change maps, sm_map causes leaks and other spooky stuff causing server perf to be worse over time.
 Because l4d2's vscript system is the best!
 
-# l4d2_csweapons
-
-A non workaround method to allow csweapons to spawn for the director, does not obey "no_cs_weapons" mission keyvalue.
- ##### Extra Requirements
-
- - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
- 
  # [physics_object_pushfix](https://forums.alliedmods.net/showthread.php?p=2705656#post2705656)
 
 alternative to https://forums.alliedmods.net/showthread.php?p=1706053 that does not modify collision rules.
