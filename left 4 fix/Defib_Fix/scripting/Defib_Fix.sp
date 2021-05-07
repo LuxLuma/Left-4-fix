@@ -29,6 +29,7 @@
 
 #define PLUGIN_VERSION	"2.0"
 
+GlobalForward g_hForward_SurvivorDeathModelCreated;
 
 Handle hOnActionComplete;
 Handle hOnStartAction;
@@ -45,6 +46,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 		strcopy(error, err_max, "Plugin only supports Left 4 Dead 2");
 		return APLRes_SilentFailure;
 	}
+	
+	g_hForward_SurvivorDeathModelCreated = new GlobalForward("L4D2_OnSurvivorDeathModelCreated", ET_Event, Param_Cell, Param_Cell);
 	return APLRes_Success;
 }
 
@@ -209,6 +212,12 @@ public MRESReturn DeathModelCreatePost(int pThis, Handle hReturn)
 	TeleportEntity(iDeathModel, vPos, NULL_VECTOR, NULL_VECTOR);
 	
 	g_iDeathModelOwner[iDeathModel] = GetClientUserId(g_iTempClient);
+
+	Call_StartForward(g_hForward_SurvivorDeathModelCreated);
+	Call_PushCell(g_iTempClient);
+	Call_PushCell(iDeathModel);
+	Call_Finish();
+
 	return MRES_Ignored;
 }
 
