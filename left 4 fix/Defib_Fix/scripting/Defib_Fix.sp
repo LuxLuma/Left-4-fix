@@ -27,7 +27,7 @@
 
 #define GAMEDATA "defib_fix"
 
-#define PLUGIN_VERSION	"2.0"
+#define PLUGIN_VERSION	"2.0.1"
 
 GlobalForward g_hForward_SurvivorDeathModelCreated;
 
