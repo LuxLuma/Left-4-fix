@@ -36,7 +36,7 @@
 		{
 			"WitchAttack::GetVictim"
 			{
-				"linux"		"13"	//0x74 --> 0xEB
+				"linux"		"12"	//0x74 --> 0xEB
 				"windows"	"6"		//0x75 --> 0x90
 			}
 			"WitchAttack::OnStart"
