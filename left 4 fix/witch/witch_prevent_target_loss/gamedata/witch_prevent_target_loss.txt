@@ -13,12 +13,12 @@
 		{
 			"WitchAttack::OnMoveToFailure_1"
 			{
-				"linux"		"24"	//0x75
+				"linux"		"19"	//0x74
 				"windows"	"9"		//0x74
 			}
 			"WitchAttack::OnMoveToFailure_2"
 			{
-				"linux"		"83"	//0x74
+				"linux"		"24"	//0x75
 				"windows"	"14"	//0x75
 			}
 		}
