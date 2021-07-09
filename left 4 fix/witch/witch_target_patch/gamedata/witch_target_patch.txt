@@ -41,7 +41,7 @@
 			}
 			"WitchAttack::OnStart"
 			{
-				"windows"	"72"	//0x75 --> 0x90
+				"windows"	"76"	//0x75 --> 0x90
 			}
 			"WitchAttack::OnAnimationEvent"
 			{
@@ -59,14 +59,14 @@
 				/* WitchAttack::OnContact Location in win&nix*/
 				"library"		"server"
 				"linux"			"@_ZNK11WitchAttack9GetVictimEv"
-				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x75\x2A\x8B\x41\x34\x83\xF8\xFF\x74\x2A\x8B\x15\x2A\x2A\x2A\x2A\x8B\xC8\x81\xE1\xFF\x0F\x00\x00\x03\xC9\x8D\x4C\xCA\x04\xC1\xE8\x0C\x39\x41\x04\x75\x2A\x8B\x01\xC3"
-								/* ? ? ? ? ? ? 75 ? 8B 41 34 83 F8 FF 74 ? 8B 15 ? ? ? ? 8B C8 81 E1 FF 0F 00 00 03 C9 8D 4C CA 04 C1 E8 0C 39 41 04 75 ? 8B 01 C3 */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83\x2A\x2A\x74\x2A\x8B\x15\x2A\x2A\x2A\x2A\x8B\x2A\x81\xE1\x2A\x2A\x2A\x2A\x03\x2A\x8D\x2A\x2A\x2A\x85\x2A\x74\x2A\xC1\x2A\x2A\x39\x2A\x2A\x75\x2A\x8B\x2A\xC3"
+								/* ? ? ? ? ? ? 75 ? 8B ? ? 83 ? ? 74 ? 8B 15 ? ? ? ? 8B ? 81 E1 ? ? ? ? 03 ? 8D ? ? ? 85 ? 74 ? C1 ? ? 39 ? ? 75 ? 8B ? C3 */
 			}
 			"WitchAttack::OnStart"
 			{
 				"library"		"server"
-				"windows"		"\x2A\x2A\x2A\x2A\xEC\x30\x8B\x15\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\x2A\x8B"
-								/* ? ? ? ? ? ? 8B 15 ? ? ? ? 53 56 57 8B ? ? 8B */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x8B\x15\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\x2A\x8B\x87"
+								/* ? ? ? ? ? ? 8B 15 ? ? ? ? 53 56 57 8B ? ? 8B 87 */
 			}
 			"WitchAttack::OnAnimationEvent"
 			{
