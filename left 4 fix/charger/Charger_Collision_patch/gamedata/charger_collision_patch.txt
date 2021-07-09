@@ -13,8 +13,8 @@
 		{
 			"CCharge::HandleCustomCollision"
 			{
-				"linux"		"327" //0x01
-				"windows"	"297" //0x01
+				"linux"        "333" // was 327 //0x01
+				"windows"    "305" // was 297 //0x01 
 			}
 		}
 		"Signatures"
