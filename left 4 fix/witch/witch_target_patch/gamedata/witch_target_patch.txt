@@ -71,14 +71,14 @@
 			"WitchAttack::OnAnimationEvent"
 			{
 				"library"		"server"
-				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x83\x38\x35\x75\x2A\x8B\x41\x38"
-								/* ? ? ? ? ? ? 83 38 35 75 ? 8B 41 ? 83 F8 08 ? ? 8B */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83"
+								/* ? ? ? ? ? ? 83 ? ? 75 ? 8B ? ? 83 ? ? 75 ? 8B ? ? 83 */
 			}
 			"WitchAttack::Update"
 			{
 				"library"		"server"
-				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\x2A\x8B\x87\x2A\x2A\x2A\x2A\x8B\x90\x2A\x2A\x2A\x2A\x81\xC7"
-								/* ? ? ? ? ? ? 53 56 57 8B ? ? 8B 87 ? ? ? ? 8B 90 ? ? ? ? 81 C7 */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x53\x56\x57\x8B\x2A\x2A\x8B\x87\x2A\x2A\x2A\x2A\x8B\x90\x2A\x2A\x2A\x2A\x81"
+								/* ? ? ? ? ? ? 53 56 57 8B ? ? 8B 87 ? ? ? ? 8B 90 ? ? ? ? 81 */
 			}
 		}
 	}
@@ -112,7 +112,7 @@
 			"WitchAttack::GetVictim"
 			{
 				"linux"		"26"	//0x74 --> 0xEB
-				"windows"	"6"		//0x75 --> 0x90
+				"windows"	"6"	//0x75 --> 0x90
 			}
 			"WitchAttack::OnStart"
 			{
@@ -141,29 +141,29 @@
 			{
 				"library"		"server"
 				"linux"			"@_ZNK11WitchAttack9GetVictimEv"
-				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83"
-								/* ? ? ? ? ? ? ? 75 ? 8B ? ? 83 ? ? 75 ? 8B ? ? 83 */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83\x2A\x2A\x74\x2A\x8B\x15\x2A\x2A\x2A\x2A\x8B\x2A\x81\xE1\x2A\x2A\x2A\x2A\xC1\x2A\x2A\x8D\x2A\x2A\x2A\x85\x2A\x74\x2A\xC1\x2A\x2A\x39\x2A\x2A\x75\x2A\x8B\x2A\xC3"
+								/* ? ? ? ? ? ? 75 ? 8B ? ? 83 ? ? 74 ? 8B 15 ? ? ? ? 8B ? 81 E1 ? ? ? ? C1 ? ? 8D ? ? ? 85 ? 74 ? C1 ? ? 39 ? ? 75 ? 8B ? C3 */
 			}
 			"WitchAttack::OnStart"
 			{
 				"library"		"server"
 				"linux"			"@_ZN11WitchAttack7OnStartEP8InfectedP6ActionIS0_E"
-				"windows"		"\x8B\x15\x2A\x2A\x2A\x2A\x83\xEC\x2C"
-								/* 8B 15 ? ? ? ? 83 EC 2C */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x53\x8B\x2A\x2A\x2A\x8B\x83\x2A\x2A\x2A\x2A\x83\x2A\x2A\x55"
+								/* ? ? ? ? ? ? 83 ? ? 53 8B ? ? ? 8B 83 ? ? ? ? 83 ? ? 55 */
 			}
 			"WitchAttack::OnAnimationEvent"
 			{
 				"library"		"server"
 				"linux"			"@_ZN11WitchAttack16OnAnimationEventEP8InfectedP11animevent_t"
-				"windows"		"\x8B\x44\x24\x0C\x83\x38\x2D\x75\x2A\x8B\x41\x38"
-								/* 8B 44 24 0C 83 38 2D 75 ? 8B 41 38 */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83"
+								/* ? ? ? ? ? ? ? 75 ? 8B ? ? 83 ? ? 75 ? 8B ? ? 83 */
 			}
 			"WitchAttack::Update"
 			{
 				"library"		"server"
 				"linux"			"@_ZN11WitchAttack6UpdateEP8Infectedf"
-				"windows"		"\x83\xEC\x20\x53\x55\x56\x8B\x74\x24\x34"
-								/* 83 EC 20 53 55 56 8B 74 24 34 */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x8B\x2A\x2A\x2A\x8B\x86\x2A\x2A\x2A\x2A\x8B\x90\x2A\x2A\x2A\x2A\x81\xC6\x2A\x2A\x2A\x2A\x57"
+								/* ? ? ? ? ? ? 8B ? ? ? 8B 86 ? ? ? ? 8B 90 ? ? ? ? 81 C6 ? ? ? ? 57 */
 			}
 			"WitchAttack::OnContact"
 			{
