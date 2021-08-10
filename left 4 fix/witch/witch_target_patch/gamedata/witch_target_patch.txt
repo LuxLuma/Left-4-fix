@@ -117,7 +117,7 @@
 			"WitchAttack::OnStart"
 			{
 				"linux"		"77"	//0x0F --> 0xEB
-				"windows"	"69"	//0x75 --> 0x90
+				"windows"	"73"	//0x75 --> 0x90
 			}
 			"WitchAttack::OnAnimationEvent"
 			{
@@ -141,8 +141,8 @@
 			{
 				"library"		"server"
 				"linux"			"@_ZNK11WitchAttack9GetVictimEv"
-				"windows"		"\x8B\x41\x38\x83\xF8\x04\x2A\x2A\x8B\x41\x34\x83\xF8\xFF\x74\x2A\x8B\x15\x2A\x2A\x2A\x2A\x8B\xC8\x81\xE1\xFF\x0F\x00\x00\xC1\xE1\x04\x8D\x4C\x11\x04\xC1\xE8\x0C\x39\x41\x04\x75\x2A\x8B\x01\xC3"
-								/* 8B 41 38 83 F8 04 75 ? 8B 41 34 83 F8 FF 74 ? 8B 15 ? ? ? ? 8B C8 81 E1 FF 0F 00 00 C1 E1 04 8D 4C 11 04 C1 E8 0C 39 41 04 75 ? 8B 01 C3 */
+				"windows"		"\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83\x2A\x2A\x75\x2A\x8B\x2A\x2A\x83"
+								/* ? ? ? ? ? ? ? 75 ? 8B ? ? 83 ? ? 75 ? 8B ? ? 83 */
 			}
 			"WitchAttack::OnStart"
 			{
