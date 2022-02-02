@@ -112,16 +112,16 @@
 			"WitchAttack::GetVictim"
 			{
 				"linux"		"26"	//0x74 --> 0xEB
-				"windows"	"6"	//0x75 --> 0x90
+				"windows"	"6"		//0x75 --> 0x90
 			}
 			"WitchAttack::OnStart"
 			{
-				"linux"		"77"	//0x0F --> 0xEB
+				"linux"		"85"	//0x0F --> 0xEB
 				"windows"	"73"	//0x75 --> 0x90
 			}
 			"WitchAttack::OnAnimationEvent"
 			{
-				"linux"		"78"	//0x75 --> 0x90
+				"linux"		"78"	//0x75 --> 0x76
 				"windows"	"15"	//0x75 --> 0x90
 			}
 			"WitchAttack::Update"
