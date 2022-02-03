@@ -116,7 +116,7 @@
 			}
 			"WitchAttack::OnStart"
 			{
-				"linux"		"85"	//0x0F --> 0xEB
+				"linux"		"84"	//0x04 --> 0x08|0x85
 				"windows"	"73"	//0x75 --> 0x90
 			}
 			"WitchAttack::OnAnimationEvent"
