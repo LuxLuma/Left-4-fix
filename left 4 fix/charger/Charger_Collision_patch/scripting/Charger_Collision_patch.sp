@@ -1,6 +1,6 @@
 /*  
 *    Fixes for gamebreaking bugs and stupid gameplay aspects
-*    Copyright (C) 2019  LuxLuma		acceliacat@gmail.com
+*    Copyright (C) 2022  LuxLuma
 *
 *    This program is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by
@@ -21,15 +21,40 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <dhooks>
+#include <sourcescramble>
 
 #pragma newdecls required
 
 #define GAMEDATA "charger_collision_patch"
-#define PLUGIN_VERSION	"1.1"
+#define CHARGE_MARKSURVIVOR_KEY "CCharge::HandleCustomCollision()::MarkSurvivor"
+#define CHARGE_ISINCAPPED_KEY "CCharge::HandleCustomCollision()::IsIncap"
+#define PLUGIN_VERSION	"2.0"
 
-static float g_fPreventDamage[MAXPLAYERS+1][MAXPLAYERS+1];
 
-Address Collision_Address = Address_Null;
+#define IMPACT_SND_INTERVAL 0.1
+
+enum struct ChargerCharge
+{
+	int m_Index;
+	float m_NextImpactSND;
+	bool m_MarkHit[MAXPLAYERS+1];
+	
+	void Reset()
+	{
+		this.m_NextImpactSND = 0.0;
+		for(int i; i <= MAXPLAYERS; ++i)
+		{
+			this.m_MarkHit[i] = false;
+		}
+	}
+}
+
+ChargerCharge g_ChargerCharge[MAXPLAYERS+1];
+
+MemoryPatch Charge_MarkSurvivor;
+Handle g_hSetAbsVelocity;
+
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -45,7 +70,7 @@ public Plugin myinfo =
 {
 	name = "[L4D2]Charger_Collision_Patch",
 	author = "Lux",
-	description = "Fixes charger only allow to his 1 survivor index & allows charging same target more than once",
+	description = "Fixes charger only allow to his 1 survivor index & allows colliding same target more than once",
 	version = PLUGIN_VERSION,
 	url = "forums.alliedmods.net/showthread.php?p=2647017"
 };
@@ -55,123 +80,174 @@ public void OnPluginStart()
 {
 	CreateConVar("charger_collision_patch_version", PLUGIN_VERSION, "", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	
+	for(int i; i <= MAXPLAYERS; ++i)
+	{
+		g_ChargerCharge[i].m_Index = i;
+	}
+	
 	Handle hGamedata = LoadGameConfigFile(GAMEDATA);
 	if(hGamedata == null) 
+	{
 		SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA);
-	
-	Address patch = GameConfGetAddress(hGamedata, "CCharge::HandleCustomCollision");
-	
-	if(!patch) 
-		SetFailState("Error finding the 'CCharge::HandleCustomCollision' signature.");
-	
-	int offset = GameConfGetOffset(hGamedata, "CCharge::HandleCustomCollision");
-	if( offset == -1 ) 
-		SetFailState("Invalid offset for 'CCharge::HandleCustomCollision'.");
-	
-	int byte = LoadFromAddress(patch + view_as<Address>(offset), NumberType_Int8);
-	if(byte == 0x01)
-	{
-		Collision_Address = patch + view_as<Address>(offset);
-		StoreToAddress(Collision_Address, 0x00, NumberType_Int8);
-		PrintToServer("ChargerCollision patch applied 'CCharge::HandleCustomCollision'");
-		
-		Handle hConvar = FindConVar("z_charge_max_force");
-		SetConVarFloat(hConvar, GetConVarFloat(hConvar) * 0.25);
-		HookConVarChange(hConvar, ScaleDownCvar);
-		
-		hConvar = FindConVar("z_charge_min_force");
-		SetConVarFloat(hConvar, GetConVarFloat(hConvar) * 0.25);
-		HookConVarChange(hConvar, ScaleDownCvar);
-		HookEvent("charger_impact", eChargerImpact, EventHookMode_Pre);
-		
 	}
-	else
+	
+	Charge_MarkSurvivor = MemoryPatch.CreateFromConf(hGamedata, CHARGE_MARKSURVIVOR_KEY);
+	if(!Charge_MarkSurvivor.Validate())
 	{
-		LogError("Error: the Nothing is correct!");
+		SetFailState("Failed to validate patch \"%s\"", CHARGE_MARKSURVIVOR_KEY);
 	}
+	
+	Handle hDetour;
+	hDetour = DHookCreateFromConf(hGamedata, "Lux::ThrowImpactedSurvivor");
+	if(!hDetour)
+	{
+		SetFailState("Failed to find 'Lux::ThrowImpactedSurvivor' signature");
+	}
+	
+	StartPrepSDKCall(SDKCall_Entity);
+	if(!PrepSDKCall_SetFromConf(hGamedata, SDKConf_Signature, "CBaseEntity::SetAbsVelocity"))
+	{
+		SetFailState("Error finding the 'CBaseEntity::SetAbsVelocity' signature.");
+	}
+	
+	PrepSDKCall_AddParameter(SDKType_Vector, SDKPass_Pointer);
+	g_hSetAbsVelocity = EndPrepSDKCall();
+	if(g_hSetAbsVelocity == null)
+	{
+		SetFailState("Unable to prep SDKCall 'CBaseEntity::SetAbsVelocity'");
+	}
+	
+	if(!DHookEnableDetour(hDetour, false, ThrowImpactedSurvivor))
+	{
+		SetFailState("Failed to detour 'Lux::ThrowImpactedSurvivor'");
+	}
+	
+	if(Charge_MarkSurvivor.Enable())
+	{
+		PrintToServer("[%s] Enabled \"%s\" patch", GAMEDATA, CHARGE_MARKSURVIVOR_KEY);
+	}
+	
 	delete hGamedata;
-}
-
-public void ScaleDownCvar(ConVar hConvar, const char[] sOldValue, const char[] sNewValue)
-{
-	static bool bIgnore = false;
-	if(bIgnore)
-		return;
 	
-	bIgnore = true;
-	SetConVarFloat(hConvar, GetConVarFloat(hConvar) * 0.25);
-	bIgnore = false;
-}
-
-public void eChargerImpact(Event hEvent, const char[] sEventName, bool bDontBroadcast)
-{
-	int iVictim = GetClientOfUserId(hEvent.GetInt("victim"));
-	if(iVictim < 1 || !IsClientInGame(iVictim) || !IsPlayerAlive(iVictim))
-		return;
-
-	int iCharger = GetClientOfUserId(hEvent.GetInt("userid"));
-	if(iCharger < 1 || !IsClientInGame(iCharger) || !IsPlayerAlive(iCharger))
-		return;
+	HookEvent("round_start", RoundStart);
+	HookEvent("charger_charge_start", ClearMarkedSurvivors, EventHookMode_Pre);
+	HookEvent("charger_charge_end", ClearMarkedSurvivors, EventHookMode_Pre);
+	AddNormalSoundHook(ImpactSNDHook);
 	
-	g_fPreventDamage[iCharger][iVictim] = GetEngineTime() + 0.5;
+	for(int i = 1; i <= MaxClients; ++i)
+	{
+		if(IsClientInGame(i))
+			OnClientPutInServer(i);
+	}
 }
 
-public void OnEntityCreated(int iEntity, const char[] sClassname)
+public MRESReturn ThrowImpactedSurvivor(Handle hReturn, Handle hParams)
 {
-	if(sClassname[0] != 's' || !StrEqual(sClassname, "survivor_bot"))
-	 	return;
-	 
-	SDKHook(iEntity, SDKHook_OnTakeDamage, BlockRecursiveDamage);
-}
-
-public void OnClientPutInServer(int iClient)
-{
-	if(!IsFakeClient(iClient))
-		SDKHook(iClient, SDKHook_OnTakeDamage, BlockRecursiveDamage);
-}
-
-public Action BlockRecursiveDamage(int iVictim, int &iCharger, int &iInflictor, float &fDamage, int &iDamagetype)
-{
-	if(GetClientTeam(iVictim) != 2)
-		return Plugin_Continue;
+	int iCharger = DHookGetParam(hParams, 1);
+	int iVictim = DHookGetParam(hParams, 2);
+	bool ShouldDamage = DHookGetParam(hParams, 4);
+	
+	//sanity check everything avoids conflicts
+	if(!ShouldDamage)
+		return MRES_Ignored;
 	
 	if(iCharger < 1 || iCharger > MaxClients || 
-		GetClientTeam(iCharger) != 3 || !IsPlayerAlive(iCharger) || 
-		GetEntProp(iCharger, Prop_Send, "m_zombieClass", 1) != 6 )
-		return Plugin_Continue;
+		GetClientTeam(iCharger) != 3 || !IsPlayerAlive(iCharger))
+	{
+		return MRES_Ignored;
+	}
 	
 	int iAbility = GetEntPropEnt(iCharger, Prop_Send, "m_customAbility");
-	if(iAbility <= MaxClients || !HasEntProp(iAbility, Prop_Send, "m_isCharging"))
+	if(iAbility == -1 || !HasEntProp(iAbility, Prop_Send, "m_isCharging"))
+	{
+		return MRES_Ignored;
+	}
+	
+	if(!GetEntProp(iAbility, Prop_Send, "m_isCharging", 1))
+		return MRES_Ignored;
+	
+	int iCarryVictim = GetEntPropEnt(iCharger, Prop_Send, "m_carryVictim");
+	if(iCarryVictim == -1)
+		return MRES_Supercede;
+	
+	if(iCarryVictim == iVictim)
+	{
+		//PrintToChatAll("illegal damage on %N from %N", iVictim, iCharger);
+		g_ChargerCharge[iCharger].m_NextImpactSND = GetGameTime() + IMPACT_SND_INTERVAL;
+		return MRES_Supercede;
+	}
+	
+	//Set velocity to 0 so impulse velocity does not account for current velocity
+	static float vecNoVel[3] = {0.0, 0.0, 0.0};
+	SDKCall(g_hSetAbsVelocity, iVictim, vecNoVel);
+	
+	g_ChargerCharge[iCharger].m_NextImpactSND = GetGameTime() + IMPACT_SND_INTERVAL;
+	if(g_ChargerCharge[iCharger].m_MarkHit[iVictim])
+	{
+		DHookSetParam(hParams, 4, false);
+		DHookSetReturn(hReturn, 1);
+		return MRES_ChangedHandled;
+	}
+	g_ChargerCharge[iCharger].m_MarkHit[iVictim] = true;
+	return MRES_Ignored;
+}
+
+public Action ImpactSNDHook(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &iCharger, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
+{
+	if(iCharger < 1 || iCharger > MaxClients || 
+		GetClientTeam(iCharger) != 3 || !IsPlayerAlive(iCharger))
+	{
+		return Plugin_Continue;
+	}
+	
+	int iAbility = GetEntPropEnt(iCharger, Prop_Send, "m_customAbility");
+	if(iAbility == -1 || !HasEntProp(iAbility, Prop_Send, "m_isCharging"))
+	{
+		return Plugin_Continue;
+	}
+	
+	if(!GetEntProp(iAbility, Prop_Send, "m_isCharging", 1))
 		return Plugin_Continue;
 	
-	if(GetEntProp(iAbility, Prop_Send, "m_isCharging", 1))
+	if(g_ChargerCharge[iCharger].m_NextImpactSND > GetGameTime())
 	{
-		if(GetEntPropEnt(iVictim, Prop_Send, "m_carryAttacker") == iCharger &&
-			GetEntPropEnt(iCharger, Prop_Send, "m_carryVictim") == iVictim)
-			return Plugin_Continue;
-			
-		if(g_fPreventDamage[iCharger][iVictim] > GetEngineTime())
+		if(StrContains(sample, "player/charger/hit/charger_smash_0", false) != -1)
 			return Plugin_Handled;
-			
 	}
+	
 	return Plugin_Continue;
 }
 
-public void OnPluginEnd()
+public void OnClientPutInServer(int client)
 {
-	if(Collision_Address == Address_Null)
+	SDKHook(client, SDKHook_SpawnPost, OnSpawnPost);
+}
+
+public void OnSpawnPost(int client)
+{
+	g_ChargerCharge[client].Reset();
+	for(int i; i <= MAXPLAYERS; ++i)
+	{
+		g_ChargerCharge[i].m_MarkHit[client] = false;
+	}
+}
+
+public void RoundStart(Event event, const char[] eventName, bool dontBroadcast)
+{
+	for(int i; i <= MAXPLAYERS; ++i)
+	{
+		g_ChargerCharge[i].Reset();
+	}
+}
+
+public void ClearMarkedSurvivors(Event event, const char[] eventName, bool dontBroadcast)
+{
+	int iCharger = GetClientOfUserId(event.GetInt("userid"));
+	if(iCharger < 1)
 		return;
 	
-	StoreToAddress(Collision_Address, 0x01, NumberType_Int8);
-	PrintToServer("ChargerCollision patch restored 'CCharge::HandleCustomCollision'");
-	
-	Handle hConvar = FindConVar("z_charge_max_force");
-	UnhookConVarChange(hConvar, ScaleDownCvar);
-	SetConVarFloat(hConvar, GetConVarFloat(hConvar) / 0.25);
-	
-	hConvar = FindConVar("z_charge_min_force");
-	UnhookConVarChange(hConvar, ScaleDownCvar);
-	SetConVarFloat(hConvar, GetConVarFloat(hConvar) / 0.25);
-	
-	PrintToServer("ChargerCollision restored 'z_charge_max_force/z_charge_min_force' convars'");
+	for(int i; i <= MAXPLAYERS; ++i)
+	{
+		g_ChargerCharge[iCharger].m_MarkHit[i] = false;
+	}
 }
