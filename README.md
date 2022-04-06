@@ -9,9 +9,9 @@ This exists because of issues with current fix with extension, https://forums.al
  ##### Extra Requirements
  - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
+
 # Charger
 ### [Charger Collision patch](https://forums.alliedmods.net/showthread.php?t=315482)
-
 
  ##### Extra Requirements
  - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
@@ -20,8 +20,10 @@ This exists because of issues with current fix with extension, https://forums.al
 ![](https://raw.githubusercontent.com/LuxLuma/Left-4-fix/master/left%204%20fix/charger/Charger_Collision_patch/with_patch.gif)
 #### without patch preview
 ![](https://raw.githubusercontent.com/LuxLuma/Left-4-fix/master/left%204%20fix/charger/Charger_Collision_patch/without_patch.gif)
+
 Link below on why it's different vs original extension fix.
 https://forums.alliedmods.net/showpost.php?p=2649772&postcount=11
+
 
 # [Witch fixes](https://forums.alliedmods.net/showthread.php?p=2647014)
 General fixes for witch.
@@ -42,13 +44,16 @@ Prevents the witch from randomly loosing target.
 
 Fixes witch going after wrong clone survivor
 
+
 # [Hunter_pounce_alignment_fix](https://forums.alliedmods.net/showthread.php?p=2711955#)
 Fixes hunter alignment and issue with shoving a pounced survivor hunter from not being shoved off very early in pounce.
+
 
 # [l4d2_changelevel](https://forums.alliedmods.net/showthread.php?p=2669850)
 
 Creates a clean way to change maps, sm_map causes leaks and other spooky stuff causing server perf to be worse over time.
 Because l4d2's vscript system is the best!
+
 
  # [physics_object_pushfix](https://forums.alliedmods.net/showthread.php?p=2705656#post2705656)
 
