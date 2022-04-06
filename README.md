@@ -7,14 +7,20 @@
 Fixes defib getting wrong targets and reviving alive players, this is semiport of [extension](https://github.com/Satanic-Spirit/defib-fix).
 This exists because of issues with current fix with extension, https://forums.alliedmods.net/showpost.php?p=2635893&postcount=13
  ##### Extra Requirements
-
  - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 # Charger
 ### [Charger Collision patch](https://forums.alliedmods.net/showthread.php?t=315482)
-Better Charger Collision patch.
 
-Link below on why it's different vs extension fix.
+
+ ##### Extra Requirements
+ - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
+ - [  Source Scramble (memory patching and allocation natives)](https://forums.alliedmods.net/showthread.php?p=2657347)
+#### with patch preview
+![](https://raw.githubusercontent.com/LuxLuma/Left-4-fix/master/left%204%20fix/charger/Charger_Collision_patch/with_patch.gif)
+#### without patch preview
+![](https://raw.githubusercontent.com/LuxLuma/Left-4-fix/master/left%204%20fix/charger/Charger_Collision_patch/without_patch.gif)
+Link below on why it's different vs original extension fix.
 https://forums.alliedmods.net/showpost.php?p=2649772&postcount=11
 
 # [Witch fixes](https://forums.alliedmods.net/showthread.php?p=2647014)
@@ -26,7 +32,6 @@ General fixes for witch.
  ## witch_allow_in_safezone
  Allows witches to chase victims into safezones.
  ##### Extra Requirements
-
  - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 ## witch_prevent_target_loss
@@ -49,7 +54,20 @@ Because l4d2's vscript system is the best!
 
 alternative to https://forums.alliedmods.net/showthread.php?p=1706053 that does not modify collision rules.
  ##### Extra Requirements
+ - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
+
+ # [survivor_afk_fix](https://forums.alliedmods.net/showthread.php?p=2714236)
+
+This afk fix includes no commands since it fixes the game function.
+ ##### Extra Requirements
+ - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
+
+
+ # [stop_air_revive]()
+
+Block allowing to survivor to revive to while not on floor prevent fall damage exploit fix.
+ ##### Extra Requirements
  - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 ##### Left 4 Fix is a repo of stuff valve should fix for left 4 dead1/2 but have not, why this exists.
