@@ -168,12 +168,16 @@ public MRESReturn ThrowImpactedSurvivor(Handle hReturn, Handle hParams)
 	
 	int iCarryVictim = GetEntPropEnt(iCharger, Prop_Send, "m_carryVictim");
 	if(iCarryVictim == -1)
+	{
+		DHookSetReturn(hReturn, 1);
 		return MRES_Supercede;
+	}
 	
 	if(iCarryVictim == iVictim)
 	{
 		//PrintToChatAll("illegal damage on %N from %N", iVictim, iCharger);
 		g_ChargerCharge[iCharger].m_NextImpactSND = GetGameTime() + IMPACT_SND_INTERVAL;
+		DHookSetReturn(hReturn, 1);
 		return MRES_Supercede;
 	}
 	
