@@ -48,6 +48,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	}
 	
 	g_hForward_SurvivorDeathModelCreated = new GlobalForward("L4D2_OnSurvivorDeathModelCreated", ET_Event, Param_Cell, Param_Cell);
+	RegPluginLibrary("Defib_Fix");
 	return APLRes_Success;
 }
 
