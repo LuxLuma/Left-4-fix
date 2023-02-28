@@ -6,15 +6,12 @@
 # [Defib fix](https://forums.alliedmods.net/showthread.php?t=315483)
 Fixes defib getting wrong targets and reviving alive players, this is semiport of [extension](https://github.com/Satanic-Spirit/defib-fix).
 This exists because of issues with current fix with extension, https://forums.alliedmods.net/showpost.php?p=2635893&postcount=13
- ##### Extra Requirements
- - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 
 # Charger
 ### [Charger Collision patch](https://forums.alliedmods.net/showthread.php?t=315482)
 
- ##### Extra Requirements
- - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
+##### Extra Requirements
  - [  Source Scramble (memory patching and allocation natives)](https://forums.alliedmods.net/showthread.php?p=2657347)
 #### with patch preview
 ![](https://raw.githubusercontent.com/LuxLuma/Left-4-fix/master/left%204%20fix/charger/Charger_Collision_patch/with_patch.gif)
@@ -33,8 +30,6 @@ General fixes for witch.
  
  ## witch_allow_in_safezone
  Allows witches to chase victims into safezones.
- ##### Extra Requirements
- - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 ## witch_prevent_target_loss
 
@@ -58,21 +53,22 @@ Because l4d2's vscript system is the best!
  # [physics_object_pushfix](https://forums.alliedmods.net/showthread.php?p=2705656#post2705656)
 
 alternative to https://forums.alliedmods.net/showthread.php?p=1706053 that does not modify collision rules.
- ##### Extra Requirements
- - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 
  # [survivor_afk_fix](https://forums.alliedmods.net/showthread.php?p=2714236)
 
 This afk fix includes no commands since it fixes the game function.
- ##### Extra Requirements
- - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
 
 
- # [stop_air_revive]()
+# [stop_air_revive](https://forums.alliedmods.net/showthread.php?t=341999)
 
 Block allowing to survivor to revive to while not on floor prevent fall damage exploit fix.
- ##### Extra Requirements
- - [DHooks (Experimental Dynamic Detour support)](https://forums.alliedmods.net/showthread.php?p=2588686#post2588686)
+
+
+# [witch_pipebomb_exploit_fix_&_death_optmizer](https://forums.alliedmods.net/showthread.php?t=342000)
+
+
+Fixes exploit throwing pipebomb at witch with horde because z_fatal_blast_max_ragdolls & z_fatal_blast_min_ragdolls function casts for Infected class which the witch shares and can outright delete her if her index is high enough to trigger valve's death optmizer after quite a few zombie deaths,
+also optimize's infected deaths to not send info to players out of PVS which can be 1000s of units away behind buildings pretty pointless.
 
 ##### Left 4 Fix is a repo of stuff valve should fix for left 4 dead1/2 but have not, why this exists.
