@@ -29,7 +29,7 @@
 #define GAMEDATA "charger_collision_patch"
 #define CHARGE_MARKSURVIVOR_KEY "CCharge::HandleCustomCollision()::MarkSurvivor"
 #define CHARGE_ISINCAPPED_KEY "CCharge::HandleCustomCollision()::IsIncap"
-#define PLUGIN_VERSION	"2.0"
+#define PLUGIN_VERSION	"2.0.1"
 
 
 #define IMPACT_SND_INTERVAL 0.1
@@ -198,7 +198,7 @@ public MRESReturn ThrowImpactedSurvivor(Handle hReturn, Handle hParams)
 
 public Action ImpactSNDHook(int clients[MAXPLAYERS], int &numClients, char sample[PLATFORM_MAX_PATH], int &iCharger, int &channel, float &volume, int &level, int &pitch, int &flags, char soundEntry[PLATFORM_MAX_PATH], int &seed)
 {
-	if(iCharger < 1 || iCharger > MaxClients || 
+	if(iCharger < 1 || iCharger > MaxClients || !IsClientInGame(iCharger) ||
 		GetClientTeam(iCharger) != 3 || !IsPlayerAlive(iCharger))
 	{
 		return Plugin_Continue;
