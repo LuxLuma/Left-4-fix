@@ -106,14 +106,14 @@ public void OnPluginStart()
 		if(offset != -1) 
 		{
 			byte = LoadFromAddress(patch + view_as<Address>(offset), NumberType_Int8);
-			if(byte == 0x74 || byte == 0x75)
+			if(byte == 0x75)
 			{
 				OnMoveToFailure_2 = patch + view_as<Address>(offset);
 				MoveFailureBytesStore_2[0] = LoadFromAddress(OnMoveToFailure_2, NumberType_Int8);
 				MoveFailureBytesStore_2[1] = LoadFromAddress(OnMoveToFailure_2 + view_as<Address>(1), NumberType_Int8);
 				
-				StoreToAddress(OnMoveToFailure_2, 0x90, NumberType_Int8);
-				StoreToAddress(OnMoveToFailure_2 + view_as<Address>(1), 0x90, NumberType_Int8);
+				StoreToAddress(OnMoveToFailure_2, 0xEB, NumberType_Int8);
+				// StoreToAddress(OnMoveToFailure_2 + view_as<Address>(1), 0x90, NumberType_Int8);
 				PrintToServer("WitchPatch Preventloss patch applied 'WitchAttack::OnMoveToFailure_2'");
 			}
 			else
