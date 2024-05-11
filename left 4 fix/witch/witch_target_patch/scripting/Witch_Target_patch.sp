@@ -450,33 +450,16 @@ void L4D1_Specific(Handle &hGamedata)
 		offset = GameConfGetOffset(hGamedata, "WitchAttack::OnContact");
 		if(offset != -1) 
 		{
-			byte = LoadFromAddress(patch + view_as<Address>(offset), NumberType_Int8);
-			if(byte == 0x0F)
+			byte = LoadFromAddress(patch + view_as<Address>(offset), NumberType_Int16);
+			if(byte == 0x850F)
 			{
 				OnContact = patch + view_as<Address>(offset);
-
-				byte = LoadFromAddress(OnContact + view_as<Address>(1), NumberType_Int8);
-				if (byte == 0x84)
+				for(int i = 0; i <= 5; i++)
 				{
-					for(int i = 0; i <= 5; i++)
-					{
-						OnContactBytesStore[i] = LoadFromAddress(OnContact + view_as<Address>(i), NumberType_Int8);
-						StoreToAddress(OnContact + view_as<Address>(i), 0x90, NumberType_Int8);
-					}
-					
-					PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::OnContact'");
+					OnContactBytesStore[i] = LoadFromAddress(OnContact + view_as<Address>(i), NumberType_Int8);
+					StoreToAddress(OnContact + view_as<Address>(i), 0x90, NumberType_Int8);
 				}
-				else if (byte == 0x85)
-				{
-					StoreToAddress(OnContact + view_as<Address>(0), 0x90, NumberType_Int8);
-					StoreToAddress(OnContact + view_as<Address>(1), 0xEB, NumberType_Int8);
-					
-					PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::OnContact'");
-				}
-				else
-				{
-					LogError("Incorrect offset for 'WitchAttack::OnContact'.");
-				}
+				PrintToServer("WitchPatch Targeting patch applied 'WitchAttack::OnContact'");
 			}
 			else
 			{
