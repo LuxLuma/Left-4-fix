@@ -92,7 +92,8 @@ public void OnPluginStart()
 	
 	if(!DHookEnableDetour(hDetour, true, DeathModelCreatePost))
 		SetFailState("Failed to detour 'CSurvivorDeathModel::Create'");
-	
+
+	delete hDetour;
 	delete hGamedata;
 	
 	CreateConVar("defib_fix_version", PLUGIN_VERSION, "", FCVAR_NOTIFY|FCVAR_DONTRECORD);
@@ -206,6 +207,9 @@ public MRESReturn DeathModelCreatePost(int pThis, Handle hReturn)
 	int iDeathModel = DHookGetReturn(hReturn);
 	if(!iDeathModel)
 		return MRES_Ignored;
+
+	if(g_iTempClient <= 0 || g_iTempClient > MaxClients || !IsClientInGame(g_iTempClient))
+		return MRES_Ignored;
 	
 	float vPos[3];
 	GetClientAbsOrigin(g_iTempClient, vPos);
@@ -225,6 +229,8 @@ public MRESReturn DeathModelCreatePost(int pThis, Handle hReturn)
 public MRESReturn DeathModelCreatePre(int pThis)
 {
 	g_iTempClient = pThis;
+
+	return MRES_Ignored;
 }
 
 public void OnEntityDestroyed(int iEntity)
